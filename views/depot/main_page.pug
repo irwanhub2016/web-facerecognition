@@ -1,0 +1,102 @@
+extends ../layout/base_monitoring 
+block content         
+        section.content-header
+          h1
+            | Dashboard
+            small Monitoring Tangki
+          ol.breadcrumb
+            li
+              a(href='#')
+                i.fa.fa-dashboard
+                |  Home
+            li.active Dashboard
+        // Main content
+        section.content
+          // Small boxes (Stat box)
+          .row
+            .col-lg-3.col-xs-6
+              .info-box
+                span.info-box-icon.bg-purple
+                  i.fa.fa-money
+                .info-box-content
+                  span.info-box-text Cost
+                  span.info-box-number
+                    small Rp
+                    |  90000
+                // /.info-box-content
+              // /.info-box
+            // /.col
+            .col-md-3.col-sm-6.col-xs-12
+              .info-box
+                span.info-box-icon.bg-green
+                  i.fa.fa-list-alt
+                .info-box-content
+                  span.info-box-text Jumlah Transaksi
+                  span.info-box-number 41,410
+            .col-lg-3.col-xs-6
+              .info-box
+                span.info-box-icon.bg-yellow
+                  i.fa.fa-sun-o
+                .info-box-content
+                  span.info-box-text Status Lampu
+                  span.info-box-number ON
+
+          .row
+            .col-xs-12
+              .box
+                .box-header
+                  h3.box-title Data Table With Full Features
+                // /.box-header
+                .box-body
+                  table#example1.table.table-bordered.table-striped
+                    thead
+                      tr
+                        th ID
+                        th Date
+                        th Time
+                        th Harga
+                        th Berat 
+          .row
+            .col-xs-12                        
+              .box.box-info
+                .box-header.with-border
+                  h3.box-title Latest Orders
+                  .box-tools.pull-right
+                    button.btn.btn-box-tool(type='button', data-widget='collapse')
+                      i.fa.fa-minus
+                    button.btn.btn-box-tool(type='button', data-widget='remove')
+                      i.fa.fa-times
+                // /.box-header
+                .box-body
+                  .table-responsive
+                    table.table.no-margin
+                      thead
+                        tr
+                          th Order ID
+                          th Item
+                          th Status
+                      tbody
+                        tr
+                          td
+                            a(href='pages/examples/invoice.html') OR9842
+                          td Call of Duty IV
+                          td
+                            span.label.label-success Shipped
+                        tr
+                          td
+                            a(href='pages/examples/invoice.html') OR1848
+                          td Samsung Smart TV
+                          td
+                            span.label.label-warning Pending
+                        tr
+                          td
+                            a(href='pages/examples/invoice.html') OR7429
+                          td iPhone 6 Plus
+                          td
+                            span.label.label-danger Delivered
+                  // /.table-responsive
+                // /.box-body
+                .box-footer.clearfix
+                  a.btn.btn-sm.btn-info.btn-flat.pull-left(href='javascript:void(0)') Place New Order
+                  a.btn.btn-sm.btn-default.btn-flat.pull-right(href='javascript:void(0)') View All Orders                                                                                                  
+                                                                         
