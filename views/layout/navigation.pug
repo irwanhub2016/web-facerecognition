@@ -1,11 +1,11 @@
 header.main-header
-	a(href='/').logo
+	a(href='http://localhost:1234/depot').logo
 		span.logo-mini
 			<b>A</b> LT
 		span.logo-lg
 			<b>Dashboard</b> 
 	nav(role='navigation').navbar.navbar-static-top
-		a(href='#', role='button', data-toggle='offcanvas').sidebar-toggle
+		a(href='http://localhost:1234/', role='button', data-toggle='offcanvas').sidebar-toggle
 			span.sr-only Toggle Navigation
 			span.icon-bar
 			span.icon-bar
@@ -92,8 +92,8 @@ header.main-header
 
 						li.user-footer
 							.pull-left
-								a(href='#').btn.btn-default.btn-flat
+								a(href='http://localhost:1234/depot/edit/1').btn.btn-default.btn-flat
 									| Profile
 							.pull-right
-								a(href='http://localhost:1234/customer/pengisian').btn.btn-default.btn-flat
+								a(href='http://localhost:1234/logout').btn.btn-default.btn-flat
 									| Sign out

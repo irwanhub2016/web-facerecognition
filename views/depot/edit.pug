@@ -2,8 +2,8 @@ extends ../layout/base
 block content 
 	section.content-header 
 		h1 
-			| Edit Customer
-			small menu for editing customer data
+			| Edit Admin
+			small menu for editing #{id_admin} profile
 		ol.breadcrumb 
 			li 
 				a(href='#') 
@@ -14,7 +14,7 @@ block content
 		.box
 			.box-header.with-border
 				h3.box-title
-					| Customer
+					| Admin
 				.box-tools.pull-right
 					button(type='button', data-widget='collapse', data-toggle='tooltip',title='collapse').btn.btn-box-tool
 						i.fa.fa-minus

@@ -13,11 +13,13 @@ html
 		.login-box
 			.login-logo
 				a(href='#')
-					b
-						| Selamat Datang di Depot Pintar
+				b
+					| Selamat Datang di Depot Pintar
+					img(src='/adminlte/dist/img/logoweb.png', width='180px', height='120px')
 			.login-box-body
 				p.login-box-msg
 					| Masuk dengan akun
+
 				form(action="/login/",method="post")
 					- if (messages.msg_error) 
 						.alert.alert-danger.alert-dismissable 
@@ -43,12 +45,6 @@ html
 							button(type="submit").btn.btn-primary.btn-block.btn-flat
 								| Sign In
 				.social-auth-links.text-center
-					p
-				a(href='#')
-					| I forgot my password
-				br
-				a(href='#').text-center
-					|	Register a new membership
 
 script(type='text/javascript', src='/adminlte/plugins/jQuery/jquery-2.2.3.min.js')
 script(type='text/javascript', src='/adminlte/bootstrap/js/bootstrap.min.js')
