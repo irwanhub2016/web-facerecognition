@@ -495,7 +495,29 @@ router.get('/',authentication_mdl.is_login, function(req, res, next) {
 	  	}
 	  	res.render('customer/pengisian', {"personList": personList});*/
 		});
-         console.log(query.sql);
+		var query = connection.query('SELECT * FROM toren limit 4',function(err,rows, fields)
+		{
+			if(err)
+			var errornya  = ("Error Selecting : %s ",err );   
+			req.flash('msg_error', errornya);
+			res.render('depot/main_page',{title:"DAIM Otomatis",data:rows,session_store:req.session});   
+			/*for (var i = 0; i < rows.length; i++) {
+
+	  			// Create an object to save current row's data
+		  		var person = {
+		  			'id_pengisian':rows[i].id_pengisian,
+		  			'date':rows[i].date,
+		  			'time':rows[i].time,
+		  			'harga':rows[i].harga,		  					  			
+		  			'berat':rows[i].berat,
+		  			'id_admin':rows[i].id_admin
+		  		}
+		  		// Add object into array
+		  		personList.push(person);
+	  	}
+	  	res.render('customer/pengisian', {"personList": personList});*/
+		});		
+        //console.log(query.sql);
          //console.log('The solution is: ', rows[0].username)
      });
   //res.render('customer/pengisian', { title: ' Pengisian Air' });

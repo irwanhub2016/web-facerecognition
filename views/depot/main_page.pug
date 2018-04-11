@@ -62,51 +62,33 @@ block content
                           td #{row.date_pengisian}
                           td #{row.time}
                           td #{row.harga}
-                          td #{row.berat} 
-                  a(href='ww.ww..w')
+                          td span.label.label-danger Delivered 
+                  a(href='/depot/Pengisian')
                     p Lihat selengkapnya
 
-          .row
-            .col-xs-12                        
-              .box.box-info
-                .box-header.with-border
-                  h3.box-title Status Monitoring Tangki
-                  .box-tools.pull-right
-                    button.btn.btn-box-tool(type='button', data-widget='collapse')
-                      i.fa.fa-minus
-                    button.btn.btn-box-tool(type='button', data-widget='remove')
-                      i.fa.fa-times
+            .row
+            .col-xs-12
+              .box
+                .box-header
+                  h3.box-title Data Pengisian Air
                 // /.box-header
                 .box-body
-                  .table-responsive
-                    table.table.no-margin
-                      thead
+                  table#example1.table.table-bordered.table-striped
+                    thead
+                      tr
+                        th ID
+                        th Date
+                        th Time
+                        th Harga
+                        th Berat
+                    for row in data 
                         tr
-                          th Jenis Tangki
-                          th Tinggi
-                          th Status
-                      tbody
-                        tr
-                          td
-                            a(href='pages/examples/invoice.html') OR9842
-                          td Call of Duty IV
-                          td
-                            span.label.label-success Shipped
-                        tr
-                          td
-                            a(href='pages/examples/invoice.html') OR1848
-                          td Samsung Smart TV
-                          td
-                            span.label.label-warning Pending
-                        tr
-                          td
-                            a(href='pages/examples/invoice.html') OR7429
-                          td iPhone 6 Plus
-                          td
-                            span.label.label-danger Delivered
-                  // /.table-responsive
-                // /.box-body
-                .box-footer.clearfix
-                  a.btn.btn-sm.btn-info.btn-flat.pull-left(href='javascript:void(0)') Place New Order
-                  a.btn.btn-sm.btn-default.btn-flat.pull-right(href='javascript:void(0)') View All Orders                                                                                                  
+                          td #{row.id_pengisian}
+                          td #{row.date_pengisian}
+                          td #{row.time}
+                          td #{row.harga}
+                          td span.label.label-danger Delivered 
+                  a(href='/depot/Pengisian')
+                    p Lihat selengkapnya                    
+
                                                                          

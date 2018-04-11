@@ -36,7 +36,7 @@ router.get('/login',function(req,res,next)
 		else
 		{
 			console.log(req.session.is_login);
-			res.render('main/login',{title:"Login Page"});} 
+			res.render('main/login',{title:"Login"});} 
 		//next(); 
 });
 
