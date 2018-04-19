@@ -2,33 +2,92 @@ var express = require('express');
 var router = express.Router();
 var moment = require('moment');
 var randomstring = require('randomstring');
+var md5 = require('md5');
 var authentication_mdl = require('../middlewares/authentication');
 var apiKey = 'dM3b9lcUMk6YMLbW1a2_EvjdpyqvpkZVpfTJp23vRJv'; //untuk IFTTT
 var IFTTTMaker = require('iftttmaker')(apiKey);
 var session_store;
 /* GET Customer page. */
 
-/*router.get('/',authentication_mdl.is_login, function(req, res, next) {
+router.get('/account',authentication_mdl.is_login, function(req, res, next) {
 	req.getConnection(function(err,connection){
-		var query = connection.query('SELECT * FROM pengisian where id_admin= 5',function(err,rows, fields)
+		var query = connection.query('SELECT * FROM admin',function(err,rows, fields)
 		{
 			if(err)
 				var errornya  = ("Error Selecting : %s ",err );   
 			req.flash('msg_error', errornya);   
-			res.render('depot/main_page',{title:"Depot Air Minum",data:rows,session_store:req.session});
-	        console.log('The solution is: ', rows[0].username);
-	        if((rows[0].username)=='admin') //tes baca rows database
-	        	{console.log("Your Success ! " + moment().format('dddd'));}
+			res.render('depot/list',{title:"Depot Air Minum",data:rows,session_store:req.session});
+
 		});
         console.log(query.sql);
      });
-});*/
+});
 
-router.get('/getPengisian', function(req, res, next) {
+router.get('/getPengisian/:berat/:status_lampu', function(req, res) {
 
 moment.locale('id');
-v_berat = req.param('berat');
-v_status_lampu = req.param('status_lampu'); //toren besar
+var v_berat = req.param('berat');
+var v_status_lampu = req.param('status_lampu'); //toren besar
+v_harga = 5000;
+v_jam = moment().format('LTS');
+v_tanggal = moment().format('LL');
+v_id_admin = 5; 
+
+var id_unik = "Peng-";
+var lasttime = v_jam.substr(v_jam.length - 1);
+var random = randomstring.generate(7);
+
+v_id_pengisian = id_unik + random+ lasttime ;
+
+var valuePengisian = {
+			id_pengisian: v_id_pengisian,
+			id_admin: '5',
+			date_pengisian:v_tanggal,
+			time:v_jam,
+			harga: '5000',
+			berat: v_berat
+		}
+var valueLampu = {
+			time:v_jam,
+			status_lampu: v_status_lampu
+		}
+
+		var insert_pengisian = 'INSERT INTO pengisian SET ?';
+		var update_lampu = 'update lampu SET ? where id_lampu=1';
+
+		req.getConnection(function(err,connection){
+			var queryPengisian = connection.query(insert_pengisian, valuePengisian, function(err, result){
+				if(err)
+				{
+				console.log("Gagal ambil dan simpan data Pengisian");
+				}
+				else
+				{
+				console.log("Sukses ambil dan simpan data Pengisian");
+				}		
+			});
+			var queryLampu = connection.query(update_lampu, valueLampu, function(err, result){
+				if(err)
+				{
+				console.log("Gagal ambil dan simpan data Lampu");
+				}
+				else
+				{
+				console.log("Sukses ambil dan simpan data Lampu");
+				}		
+			});
+		});
+
+console.log("Ambil Data : " +"| Berat : " + v_berat + "| Lampu : " + v_status_lampu 
+	+ "| Harga : " + v_harga + "| Tanggal : " + v_tanggal + "| Jam : " + v_jam + " " + v_id_pengisian);
+res.send("You are alive!");
+});
+
+router.get('/getPengisian2/:berat/:status_lampu', function(req, res) {
+
+moment.locale('id');
+var v_berat = req.param('berat');
+var v_status_lampu = req.param('status_lampu'); //toren besar
 v_harga = 5000;
 v_jam = moment().format('LTS');
 v_tanggal = moment().format('LL');
@@ -38,23 +97,16 @@ var id = "Peng-";
 var lasttime = v_jam.substr(v_jam.length - 1);
 var random = randomstring.generate(7);
 
-v_id_pengisian = id + random+ lasttime ; 
-
-
-console.log("Ambil Data : " +"| Berat : " + v_berat + "| Lampu : " + v_status_lampu + "| Harga : " + v_harga + "| Tanggal : " + v_tanggal
-	+ "| Jam : " + v_jam + " " + v_id_pengisian);
-
-res.send("You are alive!");
-
+/*v_id_pengisian = id + random+ lasttime ; 
 
 var valuePengisian = {
 			id: v_id,
 			id_pengisian: v_id_pengisian,
 			id_admin: '5',
-			date_pengisian:'123',
-			time:'1231',
-			harga: '123',
-			berat: '123'
+			date_pengisian:v_tanggal,
+			time:v_jam,
+			harga: '5000',
+			berat: v_berat
 		}
 
 		var insert_pengisian = 'INSERT INTO pengisian SET ?';
@@ -70,28 +122,36 @@ var valuePengisian = {
 				console.log("Sukses ambil dan simpan data Toren Besar");
 				}		
 			});
-		});
+		});*/
+
+
+//console.log("Ambil Data : " +"| Berat : " + v_berat + "| Lampu : " + v_status_lampu + "| Harga : " + v_harga + "| Tanggal : " + v_tanggal
+//	+ "| Jam : " + v_jam + " " + v_id_pengisian);
+
+res.send("You are alive!");
 });
 
 router.get('/getTangkiAirData/:sensor1/:sensor2', function(req, res, next) {
 
+var v_sensor1 = req.params.sensor1;
+var v_sensor2 = req.params.sensor2;
+v_jam = moment().format('LTS');
+v_tanggal = moment().format('LL');
 
-v_sensor1 = req.param('sensor1');
-v_sensor2 = req.param('sensor2');
 
 var kontenTorenKecil = {
 			ketinggian:v_sensor2,
-			time:4,
-			date:5,
-			id_admin:1,
+			time:v_jam,
+			date:v_tanggal,
+			id_admin:'5',
 			jenis_toren: 'Toren 2'
 		}
 
 var kontenTorenBesar = {
 			ketinggian:v_sensor1,
-			time:4,
-			date:5,
-			id_admin:1,
+			time:v_jam,
+			date:v_tanggal,
+			id_admin:'5',
 			jenis_toren: 'Toren 1'
 		}
 
@@ -103,11 +163,11 @@ if(v_sensor1!=0 && v_sensor2!=0)
 					{
 						if(err)
 						{
-							console.log("Gagal ambil dan simpan data Toren");
+							console.log("Gagal ambil dan simpan data Toren sedang");
 						}
 						else
 						{
-							console.log("Sukses kirim dan simpan data Toren");
+							console.log("Sukses kirim dan simpan data Toren sedang");
 						}						
 
 					});
@@ -120,15 +180,15 @@ if(v_sensor1!=0 && v_sensor2!=0)
 					{
 						if(err)
 						{
-							console.log("Gagal ambil dan simpan data Toren");
+							console.log("Gagal ambil dan simpan data Toren besar");
 						}
 						else
 						{
-							console.log("Sukses kirim dan simpan data Toren");
+							console.log("Sukses kirim dan simpan data Toren besar");
 						}						
 
 					});
-			        //console.log(query.sql);
+			        console.log(query.sql);
 			     });				
 }
 
@@ -137,11 +197,12 @@ else
 console.log("Tidak ada nilai sensor yang diterima");		
 }
 res.send("You are alive!");
+next();
 });
 
-router.get('/getIFTTT/:order', function(req, res) {
+router.get('/getIFTTT/:order', function(req, res, next) {
 
-var ambil_sensor = req.param('order');
+var ambil_sensor = req.params.order;
 
 v_date	= moment().format('LL');
 v_time = moment().format('LTS');
@@ -205,7 +266,9 @@ if(ambil_sensor=='pass')
 									else
 									{
 
-										var request = {
+										console.log("Sukses kirim dan simpan data SMS");
+
+										/*var request = {
 								          event: 'apa',
 								          values: {
 								            value1: 'hello',
@@ -220,10 +283,9 @@ if(ambil_sensor=='pass')
 								          } 
 								          else 
 								          {
-											console.log("Sukses kirim dan simpan data SMS");
 								            console.log('Request was sent');
 								          }  
-							        });
+							        	  });*/
 									}
 							});
 						}
@@ -284,7 +346,7 @@ else if(ambil_sensor=='full')
 
 							}
 					});
-			        //console.log(query.sql);
+			     console.log(query.sql);
 			     });
 }
 
@@ -297,145 +359,178 @@ else
 
 });
 
-router.get('/getTangkiAir', function(req, res, next) {
 
-//router.get('/watchdog/(:id)/(:username)/(:password)/(:full_name)', function(req, res) {
+/*router.get('/tangki_air', function(req, res, next) {
+	//var personList = [];
+	/*req.getConnection(function(err,connection){
+	var sql = 'select *from toren where id_monitoring_toren = 7;';
+		var query = connection.query(sql,function(err,rows3, fields)
+		{
 
-//v_id = req.params.id;
+		var person;
 
-v_sms = req.param('sms');
-v_sensor1 = req.param('sensor1'); //toren besar
-v_sensor2 = req.param('sensor2'); //toren sedang
-//v_full_name = req.params.full_name;
+	  	if (err) 
+	  	{
+	  		res.status(500).json({"status_code": 500,"status_message": "internal server error"});
+	  	} 
+	  	else 
+	  	{
 
-v_id_admin = "1";
-v_id_torenBesar= "TR001";
-v_id_torenSedang= "TR002";
-v_date="";
-v_time="";
+	  		if(rows3.length==1) 
+	  		{
 
-var torenBesar = {
-//			id: v_id,
-			ketinggian: v_sensor1,
-			time:v_time,
-			date:v_date,
-			id_toren: v_id_torenBesar,
-			id_admin: v_id_admin
-		}
+	  			var person = {
+		  			'ketinggian':rows3[0].ketinggian,
+		  			'date':rows3[0].date,
+		  			'time':rows3[0].time,
+		  			'id':rows3[0].id_monitoring_toren
+		  		}
 
-var torenSedang = {
-//			id: v_id,
-			ketinggian: v_sensor2,
-			time:v_time,
-			date:v_date,
-			id_toren: v_id_torenSedang,
-			id_admin: v_id_admin
-		}		
-
-var SMS = {
-//			id: v_id,
-			ketinggian: v_sensor1,
-			time:v_time,
-			date:v_date,
-			id_toren: v_id_torenBesar,
-			id_admin: v_id_admin
-		}
-
-		var insert_sql_toren_besar = 'INSERT INTO toren SET ?';
-		var insert_sql_toren_sedang = 'INSERT INTO toren SET ?';
-		var insert_sql_konten_sms = 'INSERT INTO sms_pengirim SET ?';
-		req.getConnection(function(err,connection){
-			var queryTorenBesar = connection.query(insert_sql_toren_besar, torenBesar, function(err, result){
-				if(err)
-				{
-				console.log("Gagal ambil dan simpan data Toren Besar");
-					/*var errors_detail  = ("Error Insert : %s ",err );   
-					req.flash('msg_error', errors_detail);
-					//req.send("Maaf error"); 
-					res.render('customer', 
-					{ 
-						/*name: req.param('name'), 
-						address: req.param('address'),
-						email: req.param('email'),
-						phone: req.param('phone'),*/
-					//});
-				}
-				else
-				{
-				console.log("Sukses ambil dan simpan data Toren Besar");
-					//req.flash('msg_info', 'Create customer success'); 
-					//res.redirect('/depot');
-				}		
-			});
-
-			var queryTorenSedang = connection.query(insert_sql_toren_sedang, torenSedang, function(err, result){
-				if(err)
-				{
-				console.log("Gagal ambil dan simpan data Toren Sedang");
-				}
-				else
-				{
-				console.log("Sukses ambil dan simpan data Toren Sedang");
-					//req.flash('msg_info', 'Create customer success'); 
-					//res.redirect('/depot');
-				}		
-			});
-
-			var querySms = connection.query(insert_sql_konten_sms, SMS, function(err, result){
-				if(err)
-				{
-				console.log("Gagal ambil dan simpan data SMS");
-				}
-				else
-				{
-				console.log("Sukses ambil dan simpan data SMS");
-					//req.flash('msg_info', 'Create customer success'); 
-					//res.redirect('/depot');
-				}		
-			});
+		  		res.render('depot/tangki_air', {"person": person});
+	  		} 
+	  		else 
+	  		{
+	  			res.status(404).json({"status_code":404, "status_message": "Not found"});
+	  		}
+	  	}
 		});
-//  var t = moment.duration(parseInt(req.param('uptime')), 'milliseconds')
-  //var _message = req.param('ip') + " uptime " + t.hours() + "h " + t.minutes() + "m " + t.seconds() +"s";
-console.log("watchdog from " + v_username + v_password + v_full_name);
-res.send("You are alive!");
-});
+     });*/
+	
+	/*req.getConnection(function(err,connection){
+	var sql = 'select *from toren where id_monitoring_toren = 7;';
+	var sql_lampu = 'select *from lampu where id_admin = 5;';
+		var query2 = connection.query(sql_lampu,function(err,rows4, fields)
+		{
 
-/*router.get('/pengisian',authentication_mdl.is_login, function(req, res, next) {
+		var person2;
+
+	  	if (err) 
+	  	{
+	  		res.status(500).json({"status_code": 500,"status_message": "internal server error"});
+	  	} 
+	  	else 
+	  	{
+
+	  		if(rows4.length==1) 
+	  		{
+
+	  			var person2 = {
+		  			'id_admin':rows4[0].id_admin,
+		  			'time':rows4[0].time,
+		  			'status_lampu':rows4[0].status_lampu,
+		  			'id_lampu':rows4[0].id_lampu
+		  		}
+
+		  		res.render('depot/tangki_air', {"person2": person2});
+	  		} 
+	  		else 
+	  		{
+	  			res.status(404).json({"status_code":404, "status_message": "Not found"});
+	  		}
+	  	}
+		});
+
+		var query = connection.query(sql,function(err,rows3, fields)
+		{
+
+		var person;
+
+	  	if (err) 
+	  	{
+	  		res.status(500).json({"status_code": 500,"status_message": "internal server error"});
+	  	} 
+	  	else 
+	  	{
+
+	  		if(rows3.length==1) 
+	  		{
+
+	  			var person = {
+		  			'ketinggian':rows3[0].ketinggian,
+		  			'date':rows3[0].date,
+		  			'time':rows3[0].time,
+		  			'id':rows3[0].id_monitoring_toren
+		  		}
+
+		  		res.render('depot/tangki_air', {"person": person});
+	  		} 
+	  		else 
+	  		{
+	  			res.status(404).json({"status_code":404, "status_message": "Not found"});
+	  		}
+	  	}
+		});
+	});
+
 	req.getConnection(function(err,connection){
-		var query = connection.query('SELECT * FROM tbl_users',function(err,rows)
+		var query1 = connection.query('SELECT * FROM toren',function(err,rows1, fields)
 		{
 			if(err)
 				var errornya  = ("Error Selecting : %s ",err );   
 			req.flash('msg_error', errornya);   
-			res.render('depot/pengisian',{title:"depot",data:rows});
+			console.log(rows1[0]);
+			res.render('depot/tangki_air',{title:"DAIM Otomatis",data1:rows1,session_store:req.session});
 		});
-         //console.log(query.sql);
+        //console.log(query.sql);
      });
+
 });*/
 
-router.get('/tangki_air',authentication_mdl.is_login, function(req, res, next) {
+router.get('/', function(req, res, next) {
+	var personList = [];
 	req.getConnection(function(err,connection){
-		var query = connection.query('SELECT * FROM toren',function(err,rows, fields)
+		var sql = "SELECT * FROM toren limit 4;SELECT * FROM pengisian limit 4;SELECT * FROM lampu where id_lampu = 1;SELECT * FROM pengisian;SELECT SUM(harga) as 'Count' FROM pengisian";
+		var query = connection.query(sql,function(err,rows, fields)
 		{
 			if(err)
-				var errornya  = ("Error Selecting : %s ",err );   
-			req.flash('msg_error', errornya);   
-			res.render('depot/tangki_air',{title:"DAIM Otomatis",data:rows,session_store:req.session});
+			var errornya  = ("Error Selecting : %s ",err );   
+			req.flash('msg_error', errornya);
+			console.log("pengisian Records:- " + rows[0]);
+			console.log("toren Records:- " + rows[1]);
+			console.log("lampu Records:- " + rows[2]);
+			console.log("Count Pengisian Records:- " + rows[3].length);
+			console.log("Sum Pengisian Records:- " + fields[4]);
+			var count_transaksi = rows[3].length;
+			var sum_transaksi = rows[4];
+			res.render('depot/main_page',{title:"DAIM PINTAR",data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});   
 		});
-         //console.log(query.sql);
+        console.log(query.sql);
+     });
+});
+
+router.get('/tangki_air',authentication_mdl.is_login, function(req, res, next) {
+	var personList = [];
+	req.getConnection(function(err,connection){
+		var sql = "SELECT * FROM toren;select ketinggian from toren where jenis_toren='Toren 2' order by id_admin desc limit 1;select ketinggian from toren where jenis_toren='Toren 1' order by id_admin desc limit 1";		
+		var query = connection.query(sql,['','',''],function(err,rows, fields)
+		{
+			if(err)
+			var errornya  = ("Error Selecting : %s ",err );   
+			console.log("List Records:- " + rows[0]);
+			console.log("Toren Besar Records:- " + rows[1]);
+			console.log("Toren Sedang Records:- " + rows[2]);
+			req.flash('msg_error', errornya);
+			res.render('depot/tangki_air',{title:"DAIM Otomatis",data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});          	
+		});
+		console.log(query.sql);
+		//limit ketinggian toren besar select ketinggian from toren where jenis_toren='Toren 1' order by id_admin desc limit 1;
+		//limit ketinggia toren sedang select ketinggian from toren where jenis_toren='Toren 2' order by id_admin desc limit 1;
      });
 });
 
 router.get('/inbox',authentication_mdl.is_login, function(req, res, next) {
 	req.getConnection(function(err,connection){
-		var query = connection.query('SELECT * FROM sms_pengirim',function(err,rows, fields)
+		var sql = "SELECT * FROM sms_pengirim WHERE status_sms = ?;SELECT * FROM sms_pengirim";
+		var query = connection.query(sql,['full',''],function(err,rows, fields)
 		{
 			if(err)
 				var errornya  = ("Error Selecting : %s ",err );   
 			req.flash('msg_error', errornya);   
-			res.render('depot/inbox',{title:"DAIM Otomatis",data:rows,session_store:req.session});
+			console.log("Count Records:- " + rows[0].length);
+			console.log("Select Records:- " + rows[1]);
+			var count_stat = rows[0].length;
+			res.render('depot/inbox',{title:"DAIM Otomatis",count:count_stat,data:rows[1],session_store:req.session});
 		});
-         //console.log(query.sql);
      });
 });
 
@@ -447,80 +542,33 @@ router.get('/pengisian',authentication_mdl.is_login, function(req, res, next) {
 			if(err)
 			var errornya  = ("Error Selecting : %s ",err );   
 			req.flash('msg_error', errornya);
-			res.render('depot/pengisian',{title:"DAIM Otomatis",data:rows,session_store:req.session});   
-			/*for (var i = 0; i < rows.length; i++) {
-
-	  			// Create an object to save current row's data
-		  		var person = {
-		  			'id_pengisian':rows[i].id_pengisian,
-		  			'date':rows[i].date,
-		  			'time':rows[i].time,
-		  			'harga':rows[i].harga,		  					  			
-		  			'berat':rows[i].berat,
-		  			'id_admin':rows[i].id_admin
-		  		}
-		  		// Add object into array
-		  		personList.push(person);
-	  	}
-	  	res.render('customer/pengisian', {"personList": personList});*/
+			res.render('depot/pengisian',{title:"DAIM PINTAR",data:rows,session_store:req.session});  
 		});
          console.log(query.sql);
-         //console.log('The solution is: ', rows[0].username)
      });
-  //res.render('customer/pengisian', { title: ' Pengisian Air' });
 });
 
 router.get('/',authentication_mdl.is_login, function(req, res, next) {
 	var personList = [];
 	req.getConnection(function(err,connection){
-		var query = connection.query('SELECT * FROM pengisian limit 4',function(err,rows, fields)
+		var sql = "SELECT * FROM toren limit 4;SELECT * FROM pengisian limit 4;SELECT * FROM lampu where id_lampu = 1;SELECT * FROM pengisian;SELECT SUM(harga) as 'Count' FROM pengisian";
+		var query = connection.query(sql,function(err,rows, fields)
 		{
 			if(err)
 			var errornya  = ("Error Selecting : %s ",err );   
 			req.flash('msg_error', errornya);
-			res.render('depot/main_page',{title:"DAIM Otomatis",data:rows,session_store:req.session});   
-			/*for (var i = 0; i < rows.length; i++) {
-
-	  			// Create an object to save current row's data
-		  		var person = {
-		  			'id_pengisian':rows[i].id_pengisian,
-		  			'date':rows[i].date,
-		  			'time':rows[i].time,
-		  			'harga':rows[i].harga,		  					  			
-		  			'berat':rows[i].berat,
-		  			'id_admin':rows[i].id_admin
-		  		}
-		  		// Add object into array
-		  		personList.push(person);
-	  	}
-	  	res.render('customer/pengisian', {"personList": personList});*/
+			console.log("pengisian Records:- " + rows[0]);
+			console.log("toren Records:- " + rows[1]);
+			console.log("lampu Records:- " + rows[2]);
+			console.log("Count Pengisian Records:- " + rows[3].length);
+			console.log("Sum Pengisian Records:- " + fields[4]);
+			var count_transaksi = rows[3].length;
+			var sum_transaksi = rows[4];
+			res.render('depot/main_page',{title:"DAIM PINTAR",data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});   
 		});
-		var query = connection.query('SELECT * FROM toren limit 4',function(err,rows, fields)
-		{
-			if(err)
-			var errornya  = ("Error Selecting : %s ",err );   
-			req.flash('msg_error', errornya);
-			res.render('depot/main_page',{title:"DAIM Otomatis",data:rows,session_store:req.session});   
-			/*for (var i = 0; i < rows.length; i++) {
-
-	  			// Create an object to save current row's data
-		  		var person = {
-		  			'id_pengisian':rows[i].id_pengisian,
-		  			'date':rows[i].date,
-		  			'time':rows[i].time,
-		  			'harga':rows[i].harga,		  					  			
-		  			'berat':rows[i].berat,
-		  			'id_admin':rows[i].id_admin
-		  		}
-		  		// Add object into array
-		  		personList.push(person);
-	  	}
-	  	res.render('customer/pengisian', {"personList": personList});*/
-		});		
-        //console.log(query.sql);
+        console.log(query.sql);
          //console.log('The solution is: ', rows[0].username)
      });
-  //res.render('customer/pengisian', { title: ' Pengisian Air' });
 });
 
 router.delete('/delete/:id_admin',authentication_mdl.is_login, function(req, res, next) {
@@ -574,45 +622,47 @@ router.get('/edit/(:id_admin)',authentication_mdl.is_login, function(req,res,nex
 		});
 	});
 });
-router.put('/edit/(:id)',authentication_mdl.is_login, function(req,res,next){
-	req.assert('name', 'Please fill the name').notEmpty();
+
+router.put('/edit/(:id_admin)',authentication_mdl.is_login, function(req,res,next){
+	req.assert('email', 'Please fill the email').notEmpty();
 	var errors = req.validationErrors();
 	if (!errors) {
-		v_name = req.sanitize( 'name' ).escape().trim(); 
+		v_username = req.sanitize( 'username' ).escape().trim(); 
 		v_email = req.sanitize( 'email' ).escape().trim();
-		v_address = req.sanitize( 'address' ).escape().trim();
-		v_phone = req.sanitize( 'phone' ).escape();
-
-		var depot = {
-			name: v_name,
-			address: v_address,
+		v_passwordX = req.sanitize( 'password' ).escape().trim();
+		v_password = md5(v_passwordX);
+		console.log(v_password);
+		
+		var admin = {
+			username: v_username,
 			email: v_email,
-			phone : v_phone
+			password: v_password
 		}
 
-		var update_sql = 'update tbl_users SET ? where id = '+req.params.id;
+		var update_sql = 'update admin SET ? where id_admin = '+req.params.id_admin;
 		req.getConnection(function(err,connection){
-			var query = connection.query(update_sql, depot, function(err, result){
+			var query = connection.query(update_sql, admin, function(err, result){
 				if(err)
 				{
 					var errors_detail  = ("Error Update : %s ",err );   
 					req.flash('msg_error', errors_detail); 
 					res.render('depot/edit', 
 					{ 
-						name: req.param('name'), 
-						address: req.param('address'),
+						username: req.param('username'), 
 						email: req.param('email'),
-						phone: req.param('phone'),
+						password: req.param('password'),
 					});
-				}else{
+				}
+				else
+				{
 					req.flash('msg_info', 'Update success'); 
-					res.redirect('/depot/edit/'+req.params.id);
+					res.redirect('/depot/edit/'+req.params.id_admin);
 				}		
 			});
 		});
 	}
-	else{
-
+	else
+	{
 		console.log(errors);
 		errors_detail = "<p>Sory there are error</p><ul>";
 		for (i in errors) 
@@ -624,8 +674,8 @@ router.put('/edit/(:id)',authentication_mdl.is_login, function(req,res,next){
 		req.flash('msg_error', errors_detail); 
 		res.render('depot/add-admin', 
 		{ 
-			name: req.param('name'), 
-			address: req.param('address')
+			email: req.param('email'), 
+			username: req.param('username')
 		});
 	}
 });
@@ -689,7 +739,7 @@ router.post('/add',authentication_mdl.is_login, function(req, res, next) {
 
 });
 
-router.get('/add', function(req, res, next) {
+/*router.get('/add', function(req, res, next) {
 	res.render(	'depot/add-admin', 
 	{ 
 		title: 'Add New Admin',
@@ -698,6 +748,6 @@ router.get('/add', function(req, res, next) {
 		phone:'',
 		address:''
 	});
-});
+});*/
 
 module.exports = router;

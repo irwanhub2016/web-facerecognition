@@ -1,0 +1,50 @@
+extends ../layout/base_monitoring 
+block content         
+        section.content-header
+          h1
+            | Order Message 
+            small #{count} pesanan selesai
+          ol.breadcrumb
+            li
+              a(href='#')
+                i.fa.fa-dashboard
+                |  Home
+            li.active Mailbox
+        // Main content
+        section.content
+          .row
+            .col-md-3
+              .box.box-solid
+                .box-header.with-border
+                  h3.box-title Folders
+                  .box-tools
+                    button.btn.btn-box-tool(type='button', data-widget='collapse')
+                      i.fa.fa-minus
+                .box-body.no-padding
+                  ul.nav.nav-pills.nav-stacked
+                    li
+                      a(href='#')
+                        i.fa.fa-envelope-o
+                        |  Sent
+            .col-xs-9
+              .box.box-primary
+              .box
+                .box-header
+                  h3.box-title SMS Pemesanan
+                // /.box-header
+                .box-body
+                  table#example1.table.table-bordered.table-striped
+                    thead
+                      tr
+                        th ID
+                        th Date
+                        th Time
+                        th Konten
+                        th Status
+                    for row in data 
+                        tr
+                          td #{row.id_sms}
+                          td #{row.time}
+                          td #{row.date}
+                          td #{row.isi_sms}
+                          td #{row.status_sms}                          

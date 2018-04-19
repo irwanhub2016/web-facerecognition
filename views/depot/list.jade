@@ -62,11 +62,11 @@ block content
 										td #{row.email}										
 										td
 											div(style='display:inline-block')
-												a(href='/customers/edit/#{row.id_admin}').btn.btn-sm.btn-primary
+												a(href='/depot/edit/#{row.id_admin}').btn.btn-sm.btn-primary
 														i.fa.fa-edit
 											| 
 											div(style='display:inline-block')
-												form(method='post', action='/customers/delete/#{row.id_admin}')
+												form(method='post', action='/depot/delete/#{row.id_admin}')
 													input(type="hidden",name="_method", value="DELETE")
 													button.btn.btn-sm.btn-danger(type='submit')
 														i.fa.fa-remove

@@ -3,7 +3,7 @@ block content
 	section.content-header 
 		h1 
 			| Edit Admin
-			small menu for editing #{id_admin} profile
+			small menu for editing #{data.username} profile
 		ol.breadcrumb 
 			li 
 				a(href='#') 
@@ -20,7 +20,7 @@ block content
 						i.fa.fa-minus
 					
 			.box-body
-				form(role='form',method='post' action='/customers/edit/#{(id_admin==undefined) ? data.id_admin : id_admin}')
+				form(role='form',method='post' action='/depot/edit/#{(id_admin==undefined) ? data.id_admin : id_admin}')
 					.row
 						
 						.col-xs-6
@@ -43,20 +43,16 @@ block content
 										| !{messages.msg_info}
 								.form-group
 									label
-										| Name
-									input(type='text',value="#{data.username}",name='name',placeholder='Enter Name', autofocus).form-control
-								.form-group
-									label
-										| Address
-									input(type='text',value="#{ (address == undefined) ? data.address : address }",name='address',placeholder='Enter address').form-control
+										| Username
+									input(type='text',value="#{data.username}",name='username',placeholder='Enter Username', autofocus).form-control
 								.form-group
 									label
 										| Email
-									input(type='text',value="#{ (email == undefined) ? data.email : email }",name='email',placeholder='Enter Address').form-control
+									input(type='text',value="#{ (email == undefined) ? data.email : email }",name='email',placeholder='Enter Email').form-control
 								.form-group
 									label
 										| Password
-									input(type='text',value="#{ (password == undefined) ? data.password : password }",name='password',placeholder='Enter Password').form-control
+									input(type='password',value="#{ (password == undefined) ? data.password : password }",name='password',placeholder='Enter Password').form-control
 							.box-footer
 								input(type="hidden",name="_method", value="PUT")
 								button(type='submit').btn.btn-primary

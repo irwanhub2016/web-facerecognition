@@ -22,7 +22,7 @@ block content
                   span.info-box-text Cost
                   span.info-box-number
                     small Rp
-                    |  90000
+                    |  #{count_transaksiSum.total}
                 // /.info-box-content
               // /.info-box
             // /.col
@@ -32,14 +32,14 @@ block content
                   i.fa.fa-list-alt
                 .info-box-content
                   span.info-box-text Jumlah Transaksi
-                  span.info-box-number 41,410
+                  span.info-box-number #{count_transaksiData}
             .col-lg-3.col-xs-6
               .info-box
                 span.info-box-icon.bg-yellow
                   i.fa.fa-sun-o
                 .info-box-content
                   span.info-box-text Status Lampu
-                  span.info-box-number ON
+                  span.info-box-number #{data_lampu[0].status_lampu}
 
             .row
             .col-xs-12
@@ -56,21 +56,19 @@ block content
                         th Time
                         th Harga
                         th Berat
-                    for row in data 
+                    for row, index in data_pengisian 
                         tr
-                          td #{row.id_pengisian}
+                          td #{index+1}
                           td #{row.date_pengisian}
                           td #{row.time}
                           td #{row.harga}
-                          td span.label.label-danger Delivered 
+                          td #{row.berat}
                   a(href='/depot/Pengisian')
                     p Lihat selengkapnya
 
-            .row
-            .col-xs-12
               .box
                 .box-header
-                  h3.box-title Data Pengisian Air
+                  h3.box-title Data Monitoring Air
                 // /.box-header
                 .box-body
                   table#example1.table.table-bordered.table-striped
@@ -79,16 +77,16 @@ block content
                         th ID
                         th Date
                         th Time
-                        th Harga
-                        th Berat
-                    for row in data 
+                        th Jenis Toren
+                        th Ketinggian
+                    for row2, index in data_toren 
                         tr
-                          td #{row.id_pengisian}
-                          td #{row.date_pengisian}
-                          td #{row.time}
-                          td #{row.harga}
-                          td span.label.label-danger Delivered 
-                  a(href='/depot/Pengisian')
+                          td #{index+1}
+                          td #{row2.date}
+                          td #{row2.time}
+                          td #{row2.jenis_toren}
+                          td #{row2.ketinggian}
+                  a(href='/depot/tangki_air')
                     p Lihat selengkapnya                    
 
                                                                          

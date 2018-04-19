@@ -1,4 +1,4 @@
-var express = require('express');
+        var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -21,8 +21,8 @@ var mysql = require('mysql');
 var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-//app.set('view engine', 'jade');
-app.set('view engine', 'pug');
+app.set('view engine', 'jade');
+//app.set('view engine', 'pug');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
@@ -53,18 +53,15 @@ app.use(methodOverride(function(req, res){
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-/*------------------------------------------
-    connection peer, register as middleware
-    type koneksi : single,pool and request 
--------------------------------------------*/
-
 app.use(
     connection(mysql,{
       user: 'root', // your mysql user
         host: 'localhost',
         password : '', // your mysql password
         port : 3306, //port mysql
-        database:'monitoring_depot' // your database name
+        database:'monitoring_depot', // your database name
+        debug: false,
+        multipleStatements: true
     },'pool') //or single
 
 );
@@ -91,75 +88,11 @@ app.use('/', index);
 app.use('/depot', depot);
 //app.use('/customers', customers);
 app.use('/users', users);
-app.use('/watchdog2/:id/:username/:password/:full_name', function (req, res, next) {
-
-var ambil_id = req.params.id;
-var username = req.params.username;
-var password = req.params.password;
-var full_name = req.params.full_name;
-
-//  var t = moment.duration(parseInt(req.param('uptime')), 'milliseconds')
-//var _message = req.param('ip') + " uptime " + t.hours() + "h " + t.minutes() + "m " + t.seconds() +"s";
-//console.log("watchdog from " + ambil_id + username + password);
-
-/*var customer = {
-      username: username,
-      password: password,
-      full_name: full_name
-    }
-
-    var insert_sql = 'INSERT INTO tbl_users SET ?';
-      var query = connection.query(insert_sql, customer, function(err, result){
-        if(err)
-        {
-          var errors_detail  = ("Error Insert : %s ",err );   
-          //req.send('msg_error', errors_detail); 
-         }
-         else
-         {
-          //req.send('msg_info', 'Create customer success'); 
-          //res.redirect('/customers');
-        }   
-    });*/
-    res.send("You are alive!"+password);
-});
 
 app.use('/monitoring', function (req, res, next) {
   var _message = req.param('ip');
   console.log("watchdog from " + _message);
-  res.send("You are alive!");
-});
-
-
-app.use('/getIFTTT/:order', function (req, res, next) {
-
-var ambil_sensor = req.param('order');
-
-if(ambil_sensor=='send')
-        //  var t = moment.duration(parseInt(req.param('uptime')), 'milliseconds')
-        //var _message = req.param('ip') + " uptime " + t.hours() + "h " + t.minutes() + "m " + t.seconds() +"s";
-
-        console.log("Data ID : " + ambil_sensor);
-        res.send("You are alive! "+ambil_sensor);
-        /*var request = {
-          event: 'PesanGalon',
-          values: {
-            value1: 'hello',
-            value2: 'world'
-          }
-        };
-
-        IFTTTMaker.send(request, function (error) {
-          if (error) 
-          {
-            console.log('The request could not be sent:', error);
-          } 
-          else 
-          {
-            console.log('Request was sent');
-          }  
-        });*/
-
+  res.send("You are alive!"); 
 });
 
 var requestTime = function (req, res, next) {

@@ -36,7 +36,7 @@ router.get('/login',function(req,res,next)
 		else
 		{
 			console.log(req.session.is_login);
-			res.render('main/login',{title:"Login"});} 
+			res.render('main/login',{title:"Login | DAIM PINTAR"});} 
 		//next(); 
 });
 
@@ -93,20 +93,9 @@ router.post('/login',function(req,res,next){
 	}
 });
 
-router.get('/form', function(req, res, next) {
-  res.render('form', { title: 'Depot Air Minum Isi Ulang' });
-});
-
-/*router.get('/monitor', function(req, res, next) {
-  res.render('monitoring', { title: 'Depot Air Minum Isi Ulang' });
-});*/
-
 router.get('/blankpage', function(req, res, next) {
 var waktu = moment().format('MMMM Do YYYY, h:mm:ss a');	//tes waktu
   res.render('blankpage', { title: waktu }); //variabel waktu
 });
 
-
-
 module.exports = router;
-/**/

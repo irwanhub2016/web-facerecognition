@@ -1,0 +1,58 @@
+extends ../layout/base_monitoring 
+block content         
+        section.content-header
+          h1
+            | Data Monitoring Toren
+          ol.breadcrumb
+            li
+              a(href='#')
+                i.fa.fa-dashboard
+                |  Home
+            li
+              a(href='#') Tables
+            li.active Data tables
+        section.content            
+          .row
+            .col-lg-3.col-xs-6
+              // small box
+              .small-box.bg-aqua
+                .inner
+                  h3
+                    | #{data2[0].ketinggian}
+                    sup(style='font-size: 20px') CM
+                  p Tinggi Air Toren Besar
+                .icon
+                 i.fa.fa-tint
+                a.small-box-footer(href='#')
+            .col-lg-3.col-xs-6
+              // small box
+              .small-box.bg-aqua
+                .inner
+                  h3
+                    | #{data3[0].ketinggian}
+                    sup(style='font-size: 20px') CM
+                  p Tinggi Air Toren Sedang
+                .icon
+                 i.fa.fa-tint
+                a.small-box-footer(href='#')
+            .col-xs-12
+              .box
+                .box-header
+                  h3.box-title Monitoring Toren
+                // /.box-header
+                .box-body
+                  table#example1.table.table-bordered.table-striped
+                    thead
+                      tr
+                        th ID
+                        th Date
+                        th Time
+                        th Jenis Toren
+                        th Tinggi Air
+                    for row in data1 
+                        tr
+                          td #{row.id_monitoring_toren}
+                          td #{row.date}
+                          td #{row.time}
+                          td #{row.jenis_toren}
+                          td #{row.ketinggian}                                             

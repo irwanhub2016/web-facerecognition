@@ -1,0 +1,40 @@
+header.main-header
+	a(href='http://localhost:1234/depot').logo
+		span.logo-mini
+			<b>A</b> LT
+		span.logo-lg
+			<b>Dashboard</b> 
+	nav(role='navigation').navbar.navbar-static-top
+		a(href='http://localhost:1234/', role='button', data-toggle='offcanvas').sidebar-toggle
+			span.sr-only Toggle Navigation
+			span.icon-bar
+			span.icon-bar
+			span.icon-bar
+		div.navbar-custom-menu
+			ul.nav.navbar-nav
+				li.dropdown.notifications-menu
+					a(href='#').dropdown-toggle
+						i.fa.fa-bell-o
+						span.label.label-warning
+							|  Pesanan sedang diprocess
+	
+				li.dropdown.user.user-menu
+					a(href='#',data-toggle='dropdown').dropdown-toggle
+						img(src='/adminlte/dist/img/user2-160x160.jpg',alt='User Image').user-image
+						span.hidden-xs
+							| Alexander Pierce
+					ul.dropdown-menu
+						li.user-header
+							img(src='/adminlte/dist/img/user2-160x160.jpg',alt='User Image').img-circle
+							p
+								| Alexander Pierce - Web Developer
+								small
+									| Member since Nov. 2012
+
+						li.user-footer
+							.pull-left
+								a(href='http://localhost:1234/depot/edit/5').btn.btn-default.btn-flat
+									| Profile
+							.pull-right
+								a(href='http://localhost:1234/logout').btn.btn-default.btn-flat
+									| Sign out
