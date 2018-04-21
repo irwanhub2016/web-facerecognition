@@ -90,9 +90,7 @@ app.use('/depot', depot);
 app.use('/users', users);
 
 app.use('/monitoring', function (req, res, next) {
-  var _message = req.param('ip');
-  console.log("watchdog from " + _message);
-  res.send("You are alive!"); 
+  res.send("You Halo Aulia Ganteng"); 
 });
 
 var requestTime = function (req, res, next) {

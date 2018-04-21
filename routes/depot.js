@@ -15,9 +15,9 @@ router.get('/account',authentication_mdl.is_login, function(req, res, next) {
 		{
 			if(err)
 				var errornya  = ("Error Selecting : %s ",err );   
-			req.flash('msg_error', errornya);   
-			res.render('depot/list',{title:"Depot Air Minum",data:rows,session_store:req.session});
-
+			req.flash('msg_error', errornya);
+			var notif="Ga ada pesanan cuyyyyyyyyyy";   
+			res.render('depot/list',{title:"Depot Air Minum",pass:notif,data:rows,session_store:req.session});
 		});
         console.log(query.sql);
      });
@@ -83,58 +83,12 @@ console.log("Ambil Data : " +"| Berat : " + v_berat + "| Lampu : " + v_status_la
 res.send("You are alive!");
 });
 
-router.get('/getPengisian2/:berat/:status_lampu', function(req, res) {
+router.get('/getTangkiAirData', function(req, res, next) {
 
 moment.locale('id');
-var v_berat = req.param('berat');
-var v_status_lampu = req.param('status_lampu'); //toren besar
-v_harga = 5000;
-v_jam = moment().format('LTS');
-v_tanggal = moment().format('LL');
-v_id_admin = 5; 
-
-var id = "Peng-";
-var lasttime = v_jam.substr(v_jam.length - 1);
-var random = randomstring.generate(7);
-
-/*v_id_pengisian = id + random+ lasttime ; 
-
-var valuePengisian = {
-			id: v_id,
-			id_pengisian: v_id_pengisian,
-			id_admin: '5',
-			date_pengisian:v_tanggal,
-			time:v_jam,
-			harga: '5000',
-			berat: v_berat
-		}
-
-		var insert_pengisian = 'INSERT INTO pengisian SET ?';
-
-		req.getConnection(function(err,connection){
-			var queryTorenBesar = connection.query(insert_pengisian, valuePengisian, function(err, result){
-				if(err)
-				{
-				console.log("Gagal ambil dan simpan data Toren Besar");
-				}
-				else
-				{
-				console.log("Sukses ambil dan simpan data Toren Besar");
-				}		
-			});
-		});*/
-
-
-//console.log("Ambil Data : " +"| Berat : " + v_berat + "| Lampu : " + v_status_lampu + "| Harga : " + v_harga + "| Tanggal : " + v_tanggal
-//	+ "| Jam : " + v_jam + " " + v_id_pengisian);
-
-res.send("You are alive!");
-});
-
-router.get('/getTangkiAirData/:sensor1/:sensor2', function(req, res, next) {
-
-var v_sensor1 = req.params.sensor1;
-var v_sensor2 = req.params.sensor2;
+var v_sensor1 = req.param('sensor1');
+var v_sensor2 = req.param('sensor2');
+var v_status_full = req.param('order');
 v_jam = moment().format('LTS');
 v_tanggal = moment().format('LL');
 
@@ -155,7 +109,13 @@ var kontenTorenBesar = {
 			jenis_toren: 'Toren 1'
 		}
 
-if(v_sensor1!=0 && v_sensor2!=0)
+var kontenSMSUpdate = {
+			status_sms: 'full'
+		}
+
+console.log("Status SMS : " + v_status_full);
+
+if(v_sensor1!=0 && v_sensor2!=0 && v_status_full=='full')
 {
 				var insert_data_toren_kecil = 'INSERT INTO toren SET ?';
 				req.getConnection(function(err,connection){
@@ -190,19 +150,58 @@ if(v_sensor1!=0 && v_sensor2!=0)
 					});
 			        console.log(query.sql);
 			     });				
+
+	        	var select_sms_pass = 'SELECT * FROM sms_pengirim where status_sms="pass"';	
+				var insert_update_status_sms = 'update sms_pengirim SET ? where status_sms ="pass"';
+				req.getConnection(function(err,connection){
+				var querySelectFull = connection.query(select_sms_pass,function(err,result,fields)
+				{
+						if(err)
+						{
+								console.log("Gagal Eksekusi Database! ");
+						}
+
+						else if( result.length <=0 )
+						{
+								console.log("SMS sudah di-update. Kondisi Tangki Belum Habis.");
+						}
+
+						else if( result.length >=1 )	
+						{
+
+								var queryUpdateFull = connection.query(insert_update_status_sms, kontenSMSUpdate,function(err,result,fields)
+								{
+										if(err)
+										{
+										console.log("Gagal update SMS");
+										}
+										else
+										{
+
+											console.log("Sukses update status SMS");
+										}
+								});							
+						}							
+
+						else
+						{
+								console.log("Null");
+						}
+					});	
+
+  		     	});
 }
 
 else
 {
-console.log("Tidak ada nilai sensor yang diterima");		
+console.log("Ups, parameter ada yang salah");		
 }
 res.send("You are alive!");
-next();
 });
 
-router.get('/getIFTTT/:order', function(req, res, next) {
+router.get('/getIFTTT', function(req, res, next) {
 
-var ambil_sensor = req.params.order;
+var ambil_sensor = req.param('order');
 
 v_date	= moment().format('LL');
 v_time = moment().format('LTS');
@@ -236,7 +235,7 @@ if(ambil_sensor=='pass')
 
 				var insert_konten_sms = 'INSERT INTO sms_pengirim SET ?';
 				req.getConnection(function(err,connection){
-					var query = connection.query('SELECT * FROM sms_pengirim where status_sms="pass"',function(err,rows)
+					var query = connection.query('SELECT * FROM sms_pengirim where status_sms="pass"',function(err,rows, fields)
 					{
 					    if(rows.length >=1 )
 						{
@@ -247,7 +246,7 @@ if(ambil_sensor=='pass')
 						{	
 							console.log("Belum ada kiriman sms");
 
-							var queryInsert = connection.query(insert_konten_sms, kontenSMSPass,function(err,result)
+							var queryInsert = connection.query(insert_konten_sms, kontenSMSPass,function(err,result, fields)
 							{
 									if(err)
 									{
@@ -294,24 +293,12 @@ if(ambil_sensor=='pass')
 						{
 							console.log("SMS isn't work to showed");
 						}
-
-				        /*if(((rows[0].status_sms)=='pass') < 2) //tes baca rows database
-				        	{console.log("Data Muncul");}
-
-				        else if (((rows[0].status_sms)=='pass') > 1 )
-				        {
-				        	console.log("Banyak Data");
-				        }
-				        else
-				        {
-				        	{console.log("Data Ga ada");}				        	
-				        }*/
 					});
-			        //console.log(query.sql);
+			        console.log(query.sql);
 			     });
 }
 
-else if(ambil_sensor=='full') 
+/*else if(ambil_sensor=='full') 
 {
 		        console.log("Data ID : " + ambil_sensor);
 		        res.send("Data ID : "+ ambil_sensor);
@@ -332,7 +319,7 @@ else if(ambil_sensor=='full')
 
 							}
 					});
-
+				
 				var queryUpdate = connection.query(insert_update_status_sms, kontenSMSUpdate,function(err,result)
 				{
 						if(err)
@@ -346,10 +333,9 @@ else if(ambil_sensor=='full')
 
 							}
 					});
-			     console.log(query.sql);
+			     //console.log(query.sql);
 			     });
-}
-
+}*/
 
 else
 {
@@ -359,124 +345,7 @@ else
 
 });
 
-
-/*router.get('/tangki_air', function(req, res, next) {
-	//var personList = [];
-	/*req.getConnection(function(err,connection){
-	var sql = 'select *from toren where id_monitoring_toren = 7;';
-		var query = connection.query(sql,function(err,rows3, fields)
-		{
-
-		var person;
-
-	  	if (err) 
-	  	{
-	  		res.status(500).json({"status_code": 500,"status_message": "internal server error"});
-	  	} 
-	  	else 
-	  	{
-
-	  		if(rows3.length==1) 
-	  		{
-
-	  			var person = {
-		  			'ketinggian':rows3[0].ketinggian,
-		  			'date':rows3[0].date,
-		  			'time':rows3[0].time,
-		  			'id':rows3[0].id_monitoring_toren
-		  		}
-
-		  		res.render('depot/tangki_air', {"person": person});
-	  		} 
-	  		else 
-	  		{
-	  			res.status(404).json({"status_code":404, "status_message": "Not found"});
-	  		}
-	  	}
-		});
-     });*/
-	
-	/*req.getConnection(function(err,connection){
-	var sql = 'select *from toren where id_monitoring_toren = 7;';
-	var sql_lampu = 'select *from lampu where id_admin = 5;';
-		var query2 = connection.query(sql_lampu,function(err,rows4, fields)
-		{
-
-		var person2;
-
-	  	if (err) 
-	  	{
-	  		res.status(500).json({"status_code": 500,"status_message": "internal server error"});
-	  	} 
-	  	else 
-	  	{
-
-	  		if(rows4.length==1) 
-	  		{
-
-	  			var person2 = {
-		  			'id_admin':rows4[0].id_admin,
-		  			'time':rows4[0].time,
-		  			'status_lampu':rows4[0].status_lampu,
-		  			'id_lampu':rows4[0].id_lampu
-		  		}
-
-		  		res.render('depot/tangki_air', {"person2": person2});
-	  		} 
-	  		else 
-	  		{
-	  			res.status(404).json({"status_code":404, "status_message": "Not found"});
-	  		}
-	  	}
-		});
-
-		var query = connection.query(sql,function(err,rows3, fields)
-		{
-
-		var person;
-
-	  	if (err) 
-	  	{
-	  		res.status(500).json({"status_code": 500,"status_message": "internal server error"});
-	  	} 
-	  	else 
-	  	{
-
-	  		if(rows3.length==1) 
-	  		{
-
-	  			var person = {
-		  			'ketinggian':rows3[0].ketinggian,
-		  			'date':rows3[0].date,
-		  			'time':rows3[0].time,
-		  			'id':rows3[0].id_monitoring_toren
-		  		}
-
-		  		res.render('depot/tangki_air', {"person": person});
-	  		} 
-	  		else 
-	  		{
-	  			res.status(404).json({"status_code":404, "status_message": "Not found"});
-	  		}
-	  	}
-		});
-	});
-
-	req.getConnection(function(err,connection){
-		var query1 = connection.query('SELECT * FROM toren',function(err,rows1, fields)
-		{
-			if(err)
-				var errornya  = ("Error Selecting : %s ",err );   
-			req.flash('msg_error', errornya);   
-			console.log(rows1[0]);
-			res.render('depot/tangki_air',{title:"DAIM Otomatis",data1:rows1,session_store:req.session});
-		});
-        //console.log(query.sql);
-     });
-
-});*/
-
-router.get('/', function(req, res, next) {
+router.get('/',authentication_mdl.is_login,function(req, res, next) {
 	var personList = [];
 	req.getConnection(function(err,connection){
 		var sql = "SELECT * FROM toren limit 4;SELECT * FROM pengisian limit 4;SELECT * FROM lampu where id_lampu = 1;SELECT * FROM pengisian;SELECT SUM(harga) as 'Count' FROM pengisian";
@@ -551,7 +420,7 @@ router.get('/pengisian',authentication_mdl.is_login, function(req, res, next) {
 router.get('/',authentication_mdl.is_login, function(req, res, next) {
 	var personList = [];
 	req.getConnection(function(err,connection){
-		var sql = "SELECT * FROM toren limit 4;SELECT * FROM pengisian limit 4;SELECT * FROM lampu where id_lampu = 1;SELECT * FROM pengisian;SELECT SUM(harga) as 'Count' FROM pengisian";
+		var sql = "SELECT *FROM toren;SELECT * FROM pengisian limit 4;SELECT * FROM lampu where id_lampu = 1;SELECT * FROM pengisian;SELECT SUM(harga) as 'Count' FROM pengisian";
 		var query = connection.query(sql,function(err,rows, fields)
 		{
 			if(err)
