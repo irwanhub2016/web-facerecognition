@@ -6,7 +6,41 @@ var moment = require('moment');
 var apiKey = 'pd-rA0kgBEZ5jGgnAS_EePIGmhnY-yZTCTVZZAFxviR'; //untuk IFTTT
 var IFTTTMaker = require('iftttmaker')(apiKey);
 var session_store;
-/* GET home page. */
+
+var orm    = require('orm');
+var PDFDocument = require('pdfkit');
+
+router.use(orm.express("mysql://root:@localhost:/monitoring_depot", {
+
+  define: function (db, models, next) {
+
+    models.news = db.define("admin", {
+
+    username           : String,
+
+    email        : String,
+
+    password       : String,
+
+  });
+
+  next();
+
+}
+
+}));
+
+router.get('/QueryOrm', function(req, res, next) {
+  var result = req.models.news.find({
+  }, function(error, news){
+  
+      if(error) throw error;
+  
+      res.render('findQuery', { news:news, title: 'Generate PDF using NodeJS' });
+    });
+});
+
+
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Depot Air Minum Isi Ulang' });
 });
@@ -94,8 +128,8 @@ router.post('/login',function(req,res,next){
 });
 
 router.get('/blankpage', function(req, res, next) {
-var waktu = moment().format('MMMM Do YYYY, h:mm:ss a');	//tes waktu
-  res.render('blankpage', { title: waktu }); //variabel waktu
+var waktu = moment().format('MMMM Do YYYY, h:mm:ss a');	
+  res.render('blankpage', { title: waktu }); 
 });
 
 module.exports = router;

@@ -7,23 +7,31 @@ var authentication_mdl = require('../middlewares/authentication');
 var apiKey = 'dM3b9lcUMk6YMLbW1a2_EvjdpyqvpkZVpfTJp23vRJv'; //untuk IFTTT
 var IFTTTMaker = require('iftttmaker')(apiKey);
 var session_store;
-/* GET Customer page. */
+var notif_pesanan_proses="pesanan sedang diproses";
+var notif_tangki_full="Tangki air masih penuh";
 
-router.get('/account',authentication_mdl.is_login, function(req, res, next) {
+router.get('/account', function(req, res, next) {
 	req.getConnection(function(err,connection){
 		var query = connection.query('SELECT * FROM admin',function(err,rows, fields)
 		{
 			if(err)
-				var errornya  = ("Error Selecting : %s ",err );   
+			{	var errornya  = ("Error Selecting : %s ",err );   
 			req.flash('msg_error', errornya);
-			var notif="Ga ada pesanan cuyyyyyyyyyy";   
-			res.render('depot/list',{title:"Depot Air Minum",pass:notif,data:rows,session_store:req.session});
+			}
+
+			else if(rows.length ==0)
+			{res.render('depot/list',{title:"Depot Air Minum",pass:notif_tangki_full,data:rows,session_store:req.session});
+			}
+
+			else if(rows.length >=1)
+			{res.render('depot/list',{title:"Depot Air Minum",pass:notif_pesanan_proses,data:rows,session_store:req.session});
+			}
 		});
         console.log(query.sql);
      });
 });
 
-router.get('/getPengisian/:berat/:status_lampu', function(req, res) {
+router.get('/getPengisian', function(req, res, next) {
 
 moment.locale('id');
 var v_berat = req.param('berat');
@@ -80,10 +88,12 @@ var valueLampu = {
 
 console.log("Ambil Data : " +"| Berat : " + v_berat + "| Lampu : " + v_status_lampu 
 	+ "| Harga : " + v_harga + "| Tanggal : " + v_tanggal + "| Jam : " + v_jam + " " + v_id_pengisian);
+
 res.send("You are alive!");
+
 });
 
-router.get('/getTangkiAirData', function(req, res, next) {
+router.get('/getTangkiAirData/:sensor1/:sensor2/:order', function(req, res, next) {
 
 moment.locale('id');
 var v_sensor1 = req.param('sensor1');
@@ -117,6 +127,7 @@ console.log("Status SMS : " + v_status_full);
 
 if(v_sensor1!=0 && v_sensor2!=0 && v_status_full=='full')
 {
+
 				var insert_data_toren_kecil = 'INSERT INTO toren SET ?';
 				req.getConnection(function(err,connection){
 					var query = connection.query(insert_data_toren_kecil, kontenTorenKecil,function(err,result)
@@ -199,15 +210,17 @@ console.log("Ups, parameter ada yang salah");
 res.send("You are alive!");
 });
 
-router.get('/getIFTTT', function(req, res, next) {
+router.get('/getIFTTT/:sensor1/:sensor2/:order', function(req, res, next) {
 
+var v_sensor1 = req.param('sensor1');
+var v_sensor2 = req.param('sensor2');
 var ambil_sensor = req.param('order');
 
 v_date	= moment().format('LL');
 v_time = moment().format('LTS');
 
 var kontenSMSPass = {
-//			id: v_id,
+
 			no_telp_pengirim: '123',
 			time:v_time,
 			date:v_date,
@@ -215,127 +228,143 @@ var kontenSMSPass = {
 			status_sms: 'pass'
 		}
 
-var kontenSMSUpdate = {
-			status_sms: 'full'
+var updateNilaiTorenBesar = {
+			ketinggian: v_sensor1
 		}
 
-var kontenSMSFull = {
-//			id: v_id,
-			no_telp_pengirim: '123',
-			time:v_time,
-			date:v_date,
-			isi_sms: 'halohaloooo',
-			status_sms: 'full'
+var updateNilaiTorenSedang = {
+			ketinggian: v_sensor2
 		}
 
 if(ambil_sensor=='pass')
 { 
-		        console.log("Data ID : " + ambil_sensor);
-		        res.send("Data ID : "+ ambil_sensor);
+        console.log("Status : " + ambil_sensor);
+        console.log("Toren 1 : " + v_sensor1);
+        console.log("Toren 2 : " + v_sensor2);
+        res.send("Status : "+ ambil_sensor);
 
-				var insert_konten_sms = 'INSERT INTO sms_pengirim SET ?';
-				req.getConnection(function(err,connection){
-					var query = connection.query('SELECT * FROM sms_pengirim where status_sms="pass"',function(err,rows, fields)
-					{
-					    if(rows.length >=1 )
-						{
-							console.log("SMS sedang diproses kirim");
-						}
-
-						else if (rows.length <= 0)
-						{	
-							console.log("Belum ada kiriman sms");
-
-							var queryInsert = connection.query(insert_konten_sms, kontenSMSPass,function(err,result, fields)
-							{
-									if(err)
-									{
-									console.log("Gagal ambil dan simpan data SMS");
-										/*var errors_detail  = ("Error Insert : %s ",err );   
-										req.flash('msg_error', errors_detail);
-										//req.send("Maaf error"); 
-										res.render('customer', 
-										{ 
-											/*name: req.param('name'), 
-											address: req.param('address'),
-											email: req.param('email'),
-											phone: req.param('phone'),*/
-										//});
-									}
-									else
-									{
-
-										console.log("Sukses kirim dan simpan data SMS");
-
-										/*var request = {
-								          event: 'apa',
-								          values: {
-								            value1: 'hello',
-								            value2: 'world'
-								          }
-								        };
-
-								        IFTTTMaker.send(request, function (error) {
-								          if (error) 
-								          {
-								            console.log('The request could not be sent:', error);
-								          } 
-								          else 
-								          {
-								            console.log('Request was sent');
-								          }  
-							        	  });*/
-									}
-							});
-						}
-
-						else
-						{
-							console.log("SMS isn't work to showed");
-						}
-					});
-			        console.log(query.sql);
-			     });
-}
-
-/*else if(ambil_sensor=='full') 
-{
-		        console.log("Data ID : " + ambil_sensor);
-		        res.send("Data ID : "+ ambil_sensor);
-
-				var insert_konten_sms = 'INSERT INTO sms_pengirim SET ?';	
-				var insert_update_status_sms = 'update sms_pengirim SET ? where status_sms ="pass"';
-				req.getConnection(function(err,connection){
-				var queryInsert = connection.query(insert_konten_sms, kontenSMSFull,function(err,result)
-				{
-						if(err)
-							{
-								console.log("Gagal ambil dan simpan data SMS");
-
-							}
-						else
-							{
-								console.log("Sukses kirim dan simpan data SMS");
-
-							}
-					});
+		var insert_konten_sms = 'INSERT INTO sms_pengirim SET ?';
+		req.getConnection(function(err,connection)
+		{
 				
-				var queryUpdate = connection.query(insert_update_status_sms, kontenSMSUpdate,function(err,result)
-				{
-						if(err)
+				if(err)
+				var errornya  = ("Error Selecting : %s ",err );   
+				req.flash('msg_error', errornya);
+				
+						var query = connection.query('SELECT * FROM sms_pengirim where status_sms="pass"',function(err,rows, fields)
+						{
+						    if(rows.length >=1 )
 							{
-								console.log("Gagal update data SMS");
+
+								var QueryUpdateNilaiTorenBesar = connection.query('update toren set ? where jenis_toren="Toren 1" order by id_admin desc limit 1',updateNilaiTorenBesar,function(err,rows, fields)
+								{
+
+										if(err)
+										{
+										console.log("Gagal update Tinggi Toren Besar");
+										}
+										else
+										{
+
+										console.log("Sukses update Tinggi Toren Besar");
+										}
+								});
+
+								var QueryUpdateNilaiTorenSedang = connection.query('update toren set ? where jenis_toren="Toren 1" order by id_admin desc limit 1',updateNilaiTorenSedang,function(err,rows, fields)
+								{
+
+										if(err)
+										{
+										console.log("Gagal update Tinggi Toren Sedang");
+										}
+										else
+										{
+
+										console.log("Sukses update Tinggi Toren Sedang");
+										}
+								});
+								console.log("SMS sedang diproses kirim");
+							}
+
+							else if (rows.length <= 0)
+							{	
+								console.log("Belum ada kiriman sms");
+
+								var queryInsert = connection.query(insert_konten_sms, kontenSMSPass,function(err,result, fields)
+								{
+										if(err)
+										{
+
+										console.log("Gagal ambil dan simpan data SMS");
+
+										}
+
+										else
+										{
+
+											var QueryUpdateNilaiTorenBesar = connection.query('update toren set ? where jenis_toren="Toren 1" order by id_admin desc limit 1',updateNilaiTorenBesar,function(err,rows, fields)
+											{
+
+													if(err)
+													{
+													console.log("Gagal update Tinggi Toren Besar");
+													}
+													else
+													{
+
+													console.log("Sukses update Tinggi Toren Besar");
+													}
+											});
+
+											var QueryUpdateNilaiTorenSedang = connection.query('update toren set ? where jenis_toren="Toren 2" order by id_admin desc limit 1',updateNilaiTorenSedang,function(err,rows, fields)
+											{
+
+													if(err)
+													{
+													console.log("Gagal update Tinggi Toren Sedang");
+													}
+													else
+													{
+
+													console.log("Sukses update Tinggi Toren Sedang");
+													}
+											});
+
+											console.log("Sukses kirim dan simpan data SMS");
+
+											var request = {
+									          event: 'apa',
+									          values: {
+									            value1: 'hello',
+									            value2: 'world'
+									          }
+									        };
+
+									        IFTTTMaker.send(request, function (error) {
+									          if (error) 
+									          {
+									            console.log('The request could not be sent:', error);
+									          } 
+									          else 
+									          {
+									            console.log('Request was sent');
+									          }  
+								        	  });
+										}
+								});
 
 							}
-						else
-							{
-								console.log("Sukses update status SMS");
 
+							else
+							{
+								console.log("SMS isn't work to showed");
 							}
-					});
-			     //console.log(query.sql);
-			     });
-}*/
+						});
+
+		        console.log(query.sql);		    
+		});
+
+}
 
 else
 {
@@ -347,13 +376,11 @@ else
 
 router.get('/',authentication_mdl.is_login,function(req, res, next) {
 	var personList = [];
-	req.getConnection(function(err,connection){
-		var sql = "SELECT * FROM toren limit 4;SELECT * FROM pengisian limit 4;SELECT * FROM lampu where id_lampu = 1;SELECT * FROM pengisian;SELECT SUM(harga) as 'Count' FROM pengisian";
+	req.getConnection(function(err,connection)
+	 {
+		var sql = "SELECT * FROM toren limit 4;SELECT * FROM pengisian limit 4;SELECT * FROM lampu where id_lampu = 1;SELECT * FROM pengisian;SELECT SUM(harga) as 'Count' FROM pengisian;SELECT * FROM sms_pengirim where status_sms='pass'";
 		var query = connection.query(sql,function(err,rows, fields)
 		{
-			if(err)
-			var errornya  = ("Error Selecting : %s ",err );   
-			req.flash('msg_error', errornya);
 			console.log("pengisian Records:- " + rows[0]);
 			console.log("toren Records:- " + rows[1]);
 			console.log("lampu Records:- " + rows[2]);
@@ -361,29 +388,52 @@ router.get('/',authentication_mdl.is_login,function(req, res, next) {
 			console.log("Sum Pengisian Records:- " + fields[4]);
 			var count_transaksi = rows[3].length;
 			var sum_transaksi = rows[4];
-			res.render('depot/main_page',{title:"DAIM PINTAR",data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});   
+
+			if(err)
+			{
+				var errornya  = ("Error Selecting : %s ",err );   
+				req.flash('msg_error', errornya);
+			}
+			else if(rows[5].length>=1)
+			{	
+			res.render('depot/main_page',{title:"DAIM PINTAR",pass:notif_pesanan_proses,data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});   
+			}
+			else if(rows[5].length==0)
+			{	
+			res.render('depot/main_page',{title:"DAIM PINTAR",pass:notif_tangki_full,data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});
+			}			
 		});
-        console.log(query.sql);
      });
 });
 
 router.get('/tangki_air',authentication_mdl.is_login, function(req, res, next) {
 	var personList = [];
 	req.getConnection(function(err,connection){
-		var sql = "SELECT * FROM toren;select ketinggian from toren where jenis_toren='Toren 2' order by id_admin desc limit 1;select ketinggian from toren where jenis_toren='Toren 1' order by id_admin desc limit 1";		
+		var sql = "SELECT * FROM toren;select ketinggian from toren where jenis_toren='Toren 2' order by id_admin desc limit 1;select ketinggian from toren where jenis_toren='Toren 1' order by id_admin desc limit 1;SELECT * FROM sms_pengirim where status_sms='pass'";		
 		var query = connection.query(sql,['','',''],function(err,rows, fields)
 		{
-			if(err)
-			var errornya  = ("Error Selecting : %s ",err );   
 			console.log("List Records:- " + rows[0]);
 			console.log("Toren Besar Records:- " + rows[1]);
 			console.log("Toren Sedang Records:- " + rows[2]);
-			req.flash('msg_error', errornya);
-			res.render('depot/tangki_air',{title:"DAIM Otomatis",data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});          	
+
+			// bikin validasi kalo status air diproses, tinggi air harusnya kurang dari 10 
+			if(err)
+			{
+				var errornya  = ("Error Selecting : %s ",err );
+				req.flash('msg_error', errornya);
+			}
+
+			else if(rows[3].length>=1)
+			{	
+			res.render('depot/tangki_air',{title:"DAIM Otomatis",pass:notif_pesanan_proses,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});   
+			}
+			else if(rows[3].length==0)
+			{	
+			res.render('depot/tangki_air',{title:"DAIM Otomatis",pass:notif_tangki_full,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});
+			}
+        	
 		});
 		console.log(query.sql);
-		//limit ketinggian toren besar select ketinggian from toren where jenis_toren='Toren 1' order by id_admin desc limit 1;
-		//limit ketinggia toren sedang select ketinggian from toren where jenis_toren='Toren 2' order by id_admin desc limit 1;
      });
 });
 
@@ -414,29 +464,6 @@ router.get('/pengisian',authentication_mdl.is_login, function(req, res, next) {
 			res.render('depot/pengisian',{title:"DAIM PINTAR",data:rows,session_store:req.session});  
 		});
          console.log(query.sql);
-     });
-});
-
-router.get('/',authentication_mdl.is_login, function(req, res, next) {
-	var personList = [];
-	req.getConnection(function(err,connection){
-		var sql = "SELECT *FROM toren;SELECT * FROM pengisian limit 4;SELECT * FROM lampu where id_lampu = 1;SELECT * FROM pengisian;SELECT SUM(harga) as 'Count' FROM pengisian";
-		var query = connection.query(sql,function(err,rows, fields)
-		{
-			if(err)
-			var errornya  = ("Error Selecting : %s ",err );   
-			req.flash('msg_error', errornya);
-			console.log("pengisian Records:- " + rows[0]);
-			console.log("toren Records:- " + rows[1]);
-			console.log("lampu Records:- " + rows[2]);
-			console.log("Count Pengisian Records:- " + rows[3].length);
-			console.log("Sum Pengisian Records:- " + fields[4]);
-			var count_transaksi = rows[3].length;
-			var sum_transaksi = rows[4];
-			res.render('depot/main_page',{title:"DAIM PINTAR",data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});   
-		});
-        console.log(query.sql);
-         //console.log('The solution is: ', rows[0].username)
      });
 });
 

@@ -1,0 +1,22 @@
+extends layoutORM
+
+block content
+  h1= title
+  p Click on generate PDF link to Generate PDF using NodeJS and Express
+  table.table.table-hover.table-striped.table-bordered
+    thead
+      tr
+        th #
+        th Username
+        th Email
+        th Password
+    tbody
+    - for (var i = 0; i < news.length; ++i) {
+       tr
+         th(scope='row') #{i+1}
+         td #{news[i]['username']}
+         td #{news[i]['email']}
+         td
+          a(href="/pdf?username="+news[i]['username'])
+           | Generate PDF
+    - }
