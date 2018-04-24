@@ -4,7 +4,11 @@ var moment = require('moment');
 var randomstring = require('randomstring');
 var md5 = require('md5');
 var authentication_mdl = require('../middlewares/authentication');
-var apiKey = 'dM3b9lcUMk6YMLbW1a2_EvjdpyqvpkZVpfTJp23vRJv'; //untuk IFTTT
+var apiKey = 'kCGM6nsJ6XUHt8FclKDFywoLixMnMrhB15Ll75Fuc9Z'; //untuk IFTTT
+/*
+kCGM6nsJ6XUHt8FclKDFywoLixMnMrhB15Ll75Fuc9Z -> irwansyarifudin16@gmail.com
+
+*/
 var IFTTTMaker = require('iftttmaker')(apiKey);
 var session_store;
 var notif_pesanan_proses="pesanan sedang diproses";
@@ -31,7 +35,7 @@ router.get('/account', function(req, res, next) {
      });
 });
 
-router.get('/getPengisian', function(req, res, next) {
+router.get('/getPengisian/:berat/:status_lampu', function(req, res, next) {
 
 moment.locale('id');
 var v_berat = req.param('berat');
@@ -53,7 +57,7 @@ var valuePengisian = {
 			date_pengisian:v_tanggal,
 			time:v_jam,
 			harga: '5000',
-			berat: v_berat
+			berat: '50'
 		}
 var valueLampu = {
 			time:v_jam,
@@ -89,16 +93,21 @@ var valueLampu = {
 console.log("Ambil Data : " +"| Berat : " + v_berat + "| Lampu : " + v_status_lampu 
 	+ "| Harga : " + v_harga + "| Tanggal : " + v_tanggal + "| Jam : " + v_jam + " " + v_id_pengisian);
 
-res.send("You are alive!");
-
+res.send(req.params);
+next();
 });
 
 router.get('/getTangkiAirData/:sensor1/:sensor2/:order', function(req, res, next) {
 
 moment.locale('id');
-var v_sensor1 = req.param('sensor1');
-var v_sensor2 = req.param('sensor2');
-var v_status_full = req.param('order');
+//var v_sensor1 = req.param('sensor1');
+//var v_sensor2 = req.param('sensor2');
+//var v_status_full = req.param('order');
+
+var v_sensor1 = req.params.sensor1;
+var v_sensor2 = req.params.sensor2;
+var v_status_full = req.params.order;
+
 v_jam = moment().format('LTS');
 v_tanggal = moment().format('LL');
 
@@ -207,7 +216,8 @@ else
 {
 console.log("Ups, parameter ada yang salah");		
 }
-res.send("You are alive!");
+res.send(req.params);
+next()
 });
 
 router.get('/getIFTTT/:sensor1/:sensor2/:order', function(req, res, next) {
@@ -332,24 +342,96 @@ if(ambil_sensor=='pass')
 
 											console.log("Sukses kirim dan simpan data SMS");
 
-											var request = {
-									          event: 'apa',
-									          values: {
-									            value1: 'hello',
-									            value2: 'world'
-									          }
-									        };
+											console.log(moment().format('HH'));
 
-									        IFTTTMaker.send(request, function (error) {
-									          if (error) 
-									          {
-									            console.log('The request could not be sent:', error);
-									          } 
-									          else 
-									          {
-									            console.log('Request was sent');
-									          }  
-								        	  });
+											var validasiJam = moment().format('HH');
+											
+											if(validasiJam < 11 && validasiJam >= 1)
+											{
+												console.log("Selamat Pagi");												
+												
+												var waktuPagi = 'pagi';
+
+												var request = {
+										          event: 'pesangalon',
+										          values: {
+										            value1: waktuPagi
+										          }
+										        };
+      											triggerIFTTT();
+											}
+
+											else if (validasiJam < 15 && validasiJam > 11) 
+
+											{
+											console.log("Selamat Siang");
+
+												var waktuSiang = 'siang';
+
+												var request = {
+										          event: 'pesangalon',
+										          values: {
+										            value1: waktuSiang
+										          }
+										        };
+												triggerIFTTT();										        
+											}	
+
+											else if (validasiJam < 19 && validasiJam > 15) 
+
+											{
+											console.log("Selamat Sore");												
+												
+												var waktuSore = 'sore';
+
+												var request = {
+										          event: 'pesangalon',
+										          values: {
+										            value1: waktuSore
+										          }
+										        };
+
+												triggerIFTTT();	
+											}
+
+											else if (validasiJam < 24 && validasiJam >= 19) 
+
+											{
+											console.log("Selamat Malam");
+
+												var waktuMalam = 'malam';
+
+												var request = {
+										          event: 'pesangalon',
+										          values: {
+										            value1: waktuMalam
+										          }
+										        };
+												triggerIFTTT();
+											}
+
+											function triggerIFTTT()
+											{
+
+												/*var request = {
+										          event: 'pesangalon2018',
+										          values: {
+										            value1: 'siang'
+										          }
+										        };*/
+
+										        IFTTTMaker.send(request, function (error) {
+										          if (error) 
+										          {
+										            console.log('The request could not be sent:', error);
+										          } 
+										          else 
+										          {
+										            console.log('Request was sent');
+										          }  
+									        	}); 												
+											}
+
 										}
 								});
 

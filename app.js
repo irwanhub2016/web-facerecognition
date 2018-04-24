@@ -62,7 +62,7 @@ app.use(
         database:'monitoring_depot', // your database name
         debug: false,
         multipleStatements: true
-    },'pool') //or single
+    },'single') //or single
 
 );
 
