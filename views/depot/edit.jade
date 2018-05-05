@@ -3,7 +3,7 @@ block content
 	section.content-header 
 		h1 
 			| Edit Admin
-			small menu for editing #{data.username} profile
+			small menu for editing #{data[0].username} profile
 		ol.breadcrumb 
 			li 
 				a(href='#') 
@@ -17,10 +17,26 @@ block content
 					| Admin
 				.box-tools.pull-right
 					button(type='button', data-widget='collapse', data-toggle='tooltip',title='collapse').btn.btn-box-tool
-						i.fa.fa-minus
-					
+						i.fa.fa-minus		
 			.box-body
+				img(alt='Poster', src='/uploads/cloud.png', width='10%', height='10%')
+
 				form(role='form',method='post' action='/depot/edit/#{(id_admin==undefined) ? data.id_admin : id_admin}')
+					.row
+						
+						.col-xs-6
+							.box-body
+
+								.form-group
+									label
+										| Upload Photo
+									input(type='file',value="#{data[0].username}",name='imageupload',placeholder='Enter Username', autofocus).form-control
+								input(type="hidden",name="_method", value="PUT")
+								button(type='submit').btn.btn-primary
+									i.fa.fa-pencil 
+									|  Upload
+
+				form(role='form',method='post' action='/depot/edit/#{(id_admin==undefined) ? data[0].id_admin : id_admin}')
 					.row
 						
 						.col-xs-6
@@ -41,22 +57,23 @@ block content
 											i.icon.fa.fa-ban
 											| Success! 
 										| !{messages.msg_info}
+										
 								.form-group
 									label
 										| Username
-									input(type='text',value="#{data.username}",name='username',placeholder='Enter Username', autofocus).form-control
+									input(type='text',value="#{data[0].username}",name='username',placeholder='Enter Username', autofocus).form-control
 								.form-group
 									label
 										| Email
-									input(type='text',value="#{ (email == undefined) ? data.email : email }",name='email',placeholder='Enter Email').form-control
+									input(type='email',value="#{ (email == undefined) ? data[0].email : email }",name='email',placeholder='Enter Email').form-control
 								.form-group
 									label
 										| Password
-									input(type='password',value="#{ (password == undefined) ? data.password : password }",name='password',placeholder='Enter Password').form-control
+									input(type='password',value="#{ (password == undefined) ? data[0].password : password }",name='password',placeholder='Enter Password').form-control
 							.box-footer
 								input(type="hidden",name="_method", value="PUT")
 								button(type='submit').btn.btn-primary
 									i.fa.fa-pencil 
 									|  Edit
-								a(href='/customers').btn.btn-primary.pull-right
+								a(href='/depot').btn.btn-primary.pull-right
 									| Back

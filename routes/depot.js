@@ -14,9 +14,20 @@ var session_store;
 var notif_pesanan_proses="pesanan sedang diproses";
 var notif_tangki_full="Tangki air masih penuh";
 
-router.get('/account', function(req, res, next) {
+
+router.get('/account',authentication_mdl.is_login, function(req, res, next) {
+	
+	console.log(req.session.is_login_email);
+
+	var SessionEmail = req.session.is_login_email;
+
+	var valueAdmin = {
+			email:SessionEmail
+		}
+
+	var select_admin = 'SELECT * FROM admin where ?';
 	req.getConnection(function(err,connection){
-		var query = connection.query('SELECT * FROM admin',function(err,rows, fields)
+		var query = connection.query(select_admin,valueAdmin,function(err,rows, fields)
 		{
 			if(err)
 			{	var errornya  = ("Error Selecting : %s ",err );   
@@ -31,11 +42,10 @@ router.get('/account', function(req, res, next) {
 			{res.render('depot/list',{title:"Depot Air Minum",pass:notif_pesanan_proses,data:rows,session_store:req.session});
 			}
 		});
-        console.log(query.sql);
      });
 });
 
-router.get('/getPengisian/:berat/:status_lampu', function(req, res, next) {
+router.get('/getPengisian', function(req, res, next) {
 
 moment.locale('id');
 var v_berat = req.param('berat');
@@ -59,6 +69,7 @@ var valuePengisian = {
 			harga: '5000',
 			berat: '50'
 		}
+
 var valueLampu = {
 			time:v_jam,
 			status_lampu: v_status_lampu
@@ -97,16 +108,12 @@ res.send(req.params);
 next();
 });
 
-router.get('/getTangkiAirData/:sensor1/:sensor2/:order', function(req, res, next) {
+router.get('/getTangkiAirData', function(req, res) {
 
 moment.locale('id');
-//var v_sensor1 = req.param('sensor1');
-//var v_sensor2 = req.param('sensor2');
-//var v_status_full = req.param('order');
-
-var v_sensor1 = req.params.sensor1;
-var v_sensor2 = req.params.sensor2;
-var v_status_full = req.params.order;
+var v_sensor1 = req.param('sensor1');
+var v_sensor2 = req.param('sensor2');
+var v_status_full = req.param('order');
 
 v_jam = moment().format('LTS');
 v_tanggal = moment().format('LL');
@@ -132,43 +139,43 @@ var kontenSMSUpdate = {
 			status_sms: 'full'
 		}
 
-console.log("Status SMS : " + v_status_full);
+console.log("Status SMS : " + v_status_full + "\r");
 
 if(v_sensor1!=0 && v_sensor2!=0 && v_status_full=='full')
 {
 
 				var insert_data_toren_kecil = 'INSERT INTO toren SET ?';
 				req.getConnection(function(err,connection){
-					var query = connection.query(insert_data_toren_kecil, kontenTorenKecil,function(err,result)
+					var queryTorenSedang = connection.query(insert_data_toren_kecil, kontenTorenKecil,function(err,result)
 					{
 						if(err)
 						{
-							console.log("Gagal ambil dan simpan data Toren sedang");
+							console.log("Gagal ambil dan simpan data Toren sedang\r");
 						}
 						else
 						{
-							console.log("Sukses kirim dan simpan data Toren sedang");
+							console.log("Sukses kirim dan simpan data Toren sedang\r");
 						}						
 
 					});
-			        //console.log(query.sql);
+			        console.log(queryTorenSedang.sql);
 			     });
 
 				var insert_data_toren_besar = 'INSERT INTO toren SET ?';
 				req.getConnection(function(err,connection){
-					var query = connection.query(insert_data_toren_besar, kontenTorenBesar,function(err,result)
+					var queryTorenBesar = connection.query(insert_data_toren_besar, kontenTorenBesar,function(err,result)
 					{
 						if(err)
 						{
-							console.log("Gagal ambil dan simpan data Toren besar");
+							console.log("Gagal ambil dan simpan data Toren besar\r");
 						}
 						else
 						{
-							console.log("Sukses kirim dan simpan data Toren besar");
+							console.log("Sukses kirim dan simpan data Toren besar\r");
 						}						
 
 					});
-			        console.log(query.sql);
+			        console.log(queryTorenBesar.sql);
 			     });				
 
 	        	var select_sms_pass = 'SELECT * FROM sms_pengirim where status_sms="pass"';	
@@ -178,12 +185,12 @@ if(v_sensor1!=0 && v_sensor2!=0 && v_status_full=='full')
 				{
 						if(err)
 						{
-								console.log("Gagal Eksekusi Database! ");
+								console.log("Gagal Eksekusi Database!\r");
 						}
 
 						else if( result.length <=0 )
 						{
-								console.log("SMS sudah di-update. Kondisi Tangki Belum Habis.");
+								console.log("SMS sudah di-update. Kondisi Tangki Belum Habis.\r");
 						}
 
 						else if( result.length >=1 )	
@@ -198,14 +205,14 @@ if(v_sensor1!=0 && v_sensor2!=0 && v_status_full=='full')
 										else
 										{
 
-											console.log("Sukses update status SMS");
+										console.log("Sukses update status SMS\r");
 										}
 								});							
 						}							
 
 						else
 						{
-								console.log("Null");
+								console.log("Null\r");
 						}
 					});	
 
@@ -214,13 +221,13 @@ if(v_sensor1!=0 && v_sensor2!=0 && v_status_full=='full')
 
 else
 {
-console.log("Ups, parameter ada yang salah");		
+console.log("Ups, parameter ada yang salah\r");		
 }
-res.send(req.params);
-next()
+res.send("yess !");
+//next()
 });
 
-router.get('/getIFTTT/:sensor1/:sensor2/:order', function(req, res, next) {
+router.get('/getIFTTT', function(req, res, next) {
 
 var v_sensor1 = req.param('sensor1');
 var v_sensor2 = req.param('sensor2');
@@ -342,13 +349,11 @@ if(ambil_sensor=='pass')
 
 											console.log("Sukses kirim dan simpan data SMS");
 
-											console.log(moment().format('HH'));
-
 											var validasiJam = moment().format('HH');
 											
 											if(validasiJam < 11 && validasiJam >= 1)
 											{
-												console.log("Selamat Pagi");												
+												console.log("Selamat Pagi. Pengiriman SMS Otomatis pemesanan air akan dikirim");												
 												
 												var waktuPagi = 'pagi';
 
@@ -364,7 +369,7 @@ if(ambil_sensor=='pass')
 											else if (validasiJam < 15 && validasiJam > 11) 
 
 											{
-											console.log("Selamat Siang");
+											console.log("Selamat Siang. Pengiriman SMS Otomatis pemesanan air akan dikirim");
 
 												var waktuSiang = 'siang';
 
@@ -380,7 +385,7 @@ if(ambil_sensor=='pass')
 											else if (validasiJam < 19 && validasiJam > 15) 
 
 											{
-											console.log("Selamat Sore");												
+											console.log("Selamat Sore. Pengiriman SMS Otomatis pemesanan air akan dikirim");												
 												
 												var waktuSore = 'sore';
 
@@ -397,7 +402,7 @@ if(ambil_sensor=='pass')
 											else if (validasiJam < 24 && validasiJam >= 19) 
 
 											{
-											console.log("Selamat Malam");
+											console.log("Selamat Malam. Pengiriman SMS Otomatis pemesanan air akan dikirim");
 
 												var waktuMalam = 'malam';
 
@@ -423,11 +428,11 @@ if(ambil_sensor=='pass')
 										        IFTTTMaker.send(request, function (error) {
 										          if (error) 
 										          {
-										            console.log('The request could not be sent:', error);
+										            console.log('Maaf. Request pengiriman SMS gagal:', error);
 										          } 
 										          else 
 										          {
-										            console.log('Request was sent');
+										            console.log('Selamat ! SMS otomatis berhasil dikirim ke distributor air.');
 										          }  
 									        	}); 												
 											}
@@ -458,16 +463,20 @@ else
 
 router.get('/',authentication_mdl.is_login,function(req, res, next) {
 	var personList = [];
-	req.getConnection(function(err,connection)
+	var SessionEmail = req.session.is_login_email;
+	
+ 	req.getConnection(function(err,connection)
 	 {
-		var sql = "SELECT * FROM toren limit 4;SELECT * FROM pengisian limit 4;SELECT * FROM lampu where id_lampu = 1;SELECT * FROM pengisian;SELECT SUM(harga) as 'Count' FROM pengisian;SELECT * FROM sms_pengirim where status_sms='pass'";
-		var query = connection.query(sql,function(err,rows, fields)
+		var sql = "SELECT * FROM toren limit 4;SELECT * FROM pengisian limit 4;SELECT * FROM lampu where id_lampu = 1;SELECT * FROM pengisian;SELECT SUM(harga) as 'Count' FROM pengisian;SELECT * FROM sms_pengirim WHERE status_sms = ?;SELECT * FROM admin where email = ?";
+		var query = connection.query(sql,['full',SessionEmail],function(err,rows, fields)
 		{
-			console.log("pengisian Records:- " + rows[0]);
-			console.log("toren Records:- " + rows[1]);
-			console.log("lampu Records:- " + rows[2]);
-			console.log("Count Pengisian Records:- " + rows[3].length);
-			console.log("Sum Pengisian Records:- " + fields[4]);
+			console.log("pengisian Records: " + rows[0]);
+			console.log("toren Records: " + rows[1]);
+			console.log("lampu Records: " + rows[2]);
+			console.log("Count Pengisian Records: " + rows[3].length);
+			console.log("Sum Pengisian Records: " + fields[4]);
+			console.log("Records Admin : " + rows[6]);
+
 			var count_transaksi = rows[3].length;
 			var sum_transaksi = rows[4];
 
@@ -478,11 +487,11 @@ router.get('/',authentication_mdl.is_login,function(req, res, next) {
 			}
 			else if(rows[5].length>=1)
 			{	
-			res.render('depot/main_page',{title:"DAIM PINTAR",pass:notif_pesanan_proses,data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});   
+			res.render('depot/main_page',{title:"DAIM PINTAR",showAdmin:rows[6],pass:notif_pesanan_proses,data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});   
 			}
 			else if(rows[5].length==0)
 			{	
-			res.render('depot/main_page',{title:"DAIM PINTAR",pass:notif_tangki_full,data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});
+			res.render('depot/main_page',{title:"DAIM PINTAR",showAdmin:rows[6],pass:notif_tangki_full,data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});
 			}			
 		});
      });
@@ -490,13 +499,17 @@ router.get('/',authentication_mdl.is_login,function(req, res, next) {
 
 router.get('/tangki_air',authentication_mdl.is_login, function(req, res, next) {
 	var personList = [];
+	var SessionEmail = req.session.is_login_email;
+
 	req.getConnection(function(err,connection){
-		var sql = "SELECT * FROM toren;select ketinggian from toren where jenis_toren='Toren 2' order by id_admin desc limit 1;select ketinggian from toren where jenis_toren='Toren 1' order by id_admin desc limit 1;SELECT * FROM sms_pengirim where status_sms='pass'";		
-		var query = connection.query(sql,['','',''],function(err,rows, fields)
+		var sql = "SELECT * FROM toren;select ketinggian from toren where jenis_toren='Toren 2' order by id_admin desc limit 1;select ketinggian from toren where jenis_toren='Toren 1' order by id_admin desc limit 1;SELECT * FROM sms_pengirim where status_sms='pass';SELECT * FROM admin where email = ?";		
+		var query = connection.query(sql,[SessionEmail],function(err,rows, fields)
 		{
 			console.log("List Records:- " + rows[0]);
 			console.log("Toren Besar Records:- " + rows[1]);
 			console.log("Toren Sedang Records:- " + rows[2]);
+			console.log("SMS Records:- " + rows[3]);
+			console.log("Records Admin : " + rows[4]);
 
 			// bikin validasi kalo status air diproses, tinggi air harusnya kurang dari 10 
 			if(err)
@@ -507,11 +520,13 @@ router.get('/tangki_air',authentication_mdl.is_login, function(req, res, next) {
 
 			else if(rows[3].length>=1)
 			{	
-			res.render('depot/tangki_air',{title:"DAIM Otomatis",pass:notif_pesanan_proses,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});   
+			res.render('depot/tangki_air',{title:"DAIM Otomatis",showAdmin:rows[4],pass:notif_pesanan_proses,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});   
+			console.log(req.session.is_login_email);
 			}
 			else if(rows[3].length==0)
 			{	
-			res.render('depot/tangki_air',{title:"DAIM Otomatis",pass:notif_tangki_full,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});
+			res.render('depot/tangki_air',{title:"DAIM Otomatis",showAdmin:rows[4],pass:notif_tangki_full,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});
+			console.log(req.session.is_login_email);
 			}
         	
 		});
@@ -520,35 +535,96 @@ router.get('/tangki_air',authentication_mdl.is_login, function(req, res, next) {
 });
 
 router.get('/inbox',authentication_mdl.is_login, function(req, res, next) {
+
+	var SessionEmail = req.session.is_login_email;
+
 	req.getConnection(function(err,connection){
-		var sql = "SELECT * FROM sms_pengirim WHERE status_sms = ?;SELECT * FROM sms_pengirim";
-		var query = connection.query(sql,['full',''],function(err,rows, fields)
+		var sql = "SELECT * FROM sms_pengirim WHERE status_sms = ?;SELECT * FROM sms_pengirim;SELECT * FROM admin where email = ?";
+		var query = connection.query(sql,['full',SessionEmail],function(err,rows, fields)
 		{
 			if(err)
-				var errornya  = ("Error Selecting : %s ",err );   
+			var errornya  = ("Error Selecting : %s ",err );   
 			req.flash('msg_error', errornya);   
-			console.log("Count Records:- " + rows[0].length);
-			console.log("Select Records:- " + rows[1]);
+			console.log("Count SMS:- " + rows[0].length);
+			console.log("Select SMS:- " + rows[1]);
+			console.log("Count Admin:- " + rows[2]);
 			var count_stat = rows[0].length;
-			res.render('depot/inbox',{title:"DAIM Otomatis",count:count_stat,data:rows[1],session_store:req.session});
+			res.render('depot/inbox',{title:"DAIM Otomatis",showAdmin:rows[2],count:count_stat,data:rows[1],session_store:req.session});
 		});
      });
 });
 
-router.get('/pengisian',authentication_mdl.is_login, function(req, res, next) {
+router.get('/pengisian2',authentication_mdl.is_login, function(req, res, next) {
+	var SessionEmail = req.session.is_login_email;	
+	console.log(req.session.is_login_email);
 	var personList = [];
 	req.getConnection(function(err,connection){
-		var query = connection.query('SELECT * FROM pengisian',function(err,rows, fields)
+		var sql = "SELECT * FROM pengisian;SELECT * FROM sms_pengirim where status_sms='pass';SELECT * FROM admin where email = ?";
+		var query = connection.query(sql,[SessionEmail],function(err,rows, fields)
 		{
+			console.log("List Records:- " + rows[0]);
+			console.log("SMS Records:- " + rows[1]);
+			console.log("Admin Records:- " + rows[2]);
+
 			if(err)
-			var errornya  = ("Error Selecting : %s ",err );   
-			req.flash('msg_error', errornya);
-			res.render('depot/pengisian',{title:"DAIM PINTAR",data:rows,session_store:req.session});  
+			{
+				var errornya  = ("Error Selecting : %s ",err );
+				req.flash('msg_error', errornya);
+			}
+
+			else if(rows[1].length>=1)
+			{	
+
+			res.render('depot/pengisian',{title:"DAIM PINTAR",showAdmin:rows[2],pass:notif_pesanan_proses,data1:rows[0],session_store:req.session});   
+			console.log(req.session.is_login_email);
+			}
+
+			else if(rows[1].length==0)
+			{	
+			res.render('depot/pengisian',{title:"DAIM PINTAR",showAdmin:rows[2],pass:notif_pesanan_proses,data1:rows[0],session_store:req.session});
+			console.log(req.session.is_login_email);
+			}
 		});
          console.log(query.sql);
      });
 });
 
+router.get('/tangki_air',authentication_mdl.is_login, function(req, res, next) {
+	var personList = [];
+	var SessionEmail = req.session.is_login_email;
+
+	req.getConnection(function(err,connection){
+		var sql = "SELECT * FROM toren;select ketinggian from toren where jenis_toren='Toren 2' order by id_admin desc limit 1;select ketinggian from toren where jenis_toren='Toren 1' order by id_admin desc limit 1;SELECT * FROM sms_pengirim where status_sms='pass';SELECT * FROM admin where email = ?";		
+		var query = connection.query(sql,[SessionEmail],function(err,rows, fields)
+		{
+			console.log("List Records:- " + rows[0]);
+			console.log("Toren Besar Records:- " + rows[1]);
+			console.log("Toren Sedang Records:- " + rows[2]);
+			console.log("SMS Records:- " + rows[3]);
+			console.log("Records Admin : " + rows[4]);
+
+			// bikin validasi kalo status air diproses, tinggi air harusnya kurang dari 10 
+			if(err)
+			{
+				var errornya  = ("Error Selecting : %s ",err );
+				req.flash('msg_error', errornya);
+			}
+
+			else if(rows[3].length>=1)
+			{	
+			res.render('depot/tangki_air',{title:"DAIM Otomatis",showAdmin:rows[4],pass:notif_pesanan_proses,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});   
+			console.log(req.session.is_login_email);
+			}
+			else if(rows[3].length==0)
+			{	
+			res.render('depot/tangki_air',{title:"DAIM Otomatis",showAdmin:rows[4],pass:notif_tangki_full,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});
+			console.log(req.session.is_login_email);
+			}
+        	
+		});
+		console.log(query.sql);
+     });
+});
 router.delete('/delete/:id_admin',authentication_mdl.is_login, function(req, res, next) {
 	req.getConnection(function(err,connection){
 		var admin = {
@@ -574,15 +650,23 @@ router.delete('/delete/:id_admin',authentication_mdl.is_login, function(req, res
 });
 
 router.get('/edit/(:id_admin)',authentication_mdl.is_login, function(req,res,next){
+
+	var SessionEmail = req.session.is_login_email;
+	var paramAdmin = req.params.id_admin;
+
 	req.getConnection(function(err,connection){
-		var query = connection.query('SELECT * FROM admin where id_admin='+req.params.id_admin,function(err,rows)
+
+		var sql = "SELECT * FROM admin where id_admin=?;SELECT * FROM sms_pengirim WHERE status_sms = ?;SELECT * FROM admin where email = ?";
+		var query = connection.query(sql,[paramAdmin,'full',SessionEmail],function(err,rows,fields)
 		{
-			if(err)
+			/*if(err)
 			{
 				var errornya  = ("Error Selecting : %s ",err );  
 				req.flash('msg_error', errors_detail); 
 				res.redirect('/depot'); 
-			}else
+			}
+
+			else
 			{
 				if(rows.length <=0)
 				{
@@ -591,12 +675,32 @@ router.get('/edit/(:id_admin)',authentication_mdl.is_login, function(req,res,nex
 				}
 				else
 				{	
-					console.log(rows.username);
 					res.render('depot/edit',{title:"Edit ",data:rows[0]});
-
 				}
+			}*/
+
+
+			console.log("Admin Records: " + rows[0]);
+			console.log("SMS Records: " + rows[1]);
+			console.log("Admin Select Records: " + rows[2]);
+	
+			// bikin validasi kalo status air diproses, tinggi air harusnya kurang dari 10 
+			if(err)
+			{
+				var errornya  = ("Error Selecting : %s ",err );
+				req.flash('msg_error', errornya);
 			}
 
+			else if(rows[1].length>=1)
+			{	
+			res.render('depot/edit',{title:"Edit ",data:rows[2], showAdmin:rows[2], pass:notif_pesanan_proses});   
+			console.log(req.session.is_login_email);
+			}
+			else if(rows[1].length==0)
+			{	
+			res.render('depot/edit',{title:"Edit ",data:rows[2], showAdmin:rows[2], pass:notif_tangki_full});   
+			console.log(req.session.is_login_email);
+			}
 		});
 	});
 });
@@ -609,12 +713,13 @@ router.put('/edit/(:id_admin)',authentication_mdl.is_login, function(req,res,nex
 		v_email = req.sanitize( 'email' ).escape().trim();
 		v_passwordX = req.sanitize( 'password' ).escape().trim();
 		v_password = md5(v_passwordX);
-		console.log(v_password);
+		console.log("Password Admin : " + v_passwordX);
 		
 		var admin = {
 			username: v_username,
 			email: v_email,
-			password: v_password
+			password: v_password,
+			photo:''
 		}
 
 		var update_sql = 'update admin SET ? where id_admin = '+req.params.id_admin;
@@ -626,9 +731,9 @@ router.put('/edit/(:id_admin)',authentication_mdl.is_login, function(req,res,nex
 					req.flash('msg_error', errors_detail); 
 					res.render('depot/edit', 
 					{ 
-						username: req.param('username'), 
-						email: req.param('email'),
-						password: req.param('password'),
+						username: req.params.username, 
+						email: req.params.email,
+						password: req.params.password,
 					});
 				}
 				else

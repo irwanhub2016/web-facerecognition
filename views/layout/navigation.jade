@@ -22,18 +22,18 @@ header.main-header
 					a(href='#',data-toggle='dropdown').dropdown-toggle
 						img(src='/adminlte/dist/img/user2-160x160.jpg',alt='User Image').user-image
 						span.hidden-xs
-							| Alexander Pierce
+							| #{showAdmin[0].username}
 					ul.dropdown-menu
 						li.user-header
 							img(src='/adminlte/dist/img/user2-160x160.jpg',alt='User Image').img-circle
 							p
-								| Alexander Pierce - Web Developer
+								| #{showAdmin[0].username} - Administrator
 								small
-									| Member since Nov. 2012
+									| Member since May 2018
 
 						li.user-footer
 							.pull-left
-								a(href='http://localhost:1234/depot/edit/5').btn.btn-default.btn-flat
+								a(href='http://localhost:1234/depot/edit/#{showAdmin[0].id_admin}').btn.btn-default.btn-flat
 									| Profile
 							.pull-right
 								a(href='http://localhost:1234/logout').btn.btn-default.btn-flat

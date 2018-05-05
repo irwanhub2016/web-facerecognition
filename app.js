@@ -1,4 +1,4 @@
-        var express = require('express');
+var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -11,12 +11,13 @@ var users = require('./routes/users');
 var depot = require('./routes/depot');
 var expressValidator = require('express-validator');
 var methodOverride = require('method-override');
-var apiKey = 'pd-rA0kgBEZ5jGgnAS_EePIGmhnY-yZTCTVZZAFxviR'; //untuk IFTTT
-var IFTTTMaker = require('iftttmaker')(apiKey);
+var multer = require("multer");
 var moment = require('moment');
 
 var connection  = require('express-myconnection'); 
 var mysql = require('mysql');
+
+var upload = multer({ dest: 'uploads/' })
 
 var app = express();
 // view engine setup
@@ -42,6 +43,7 @@ app.use(session({
 app.use(flash());
 app.use(expressValidator());
 app.use(methodOverride(function(req, res){
+
  if (req.body && typeof req.body == 'object' && '_method' in req.body) 
   { 
       var method = req.body._method;
@@ -55,61 +57,47 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(
     connection(mysql,{
-      user: 'root', // your mysql user
+      user: 'root', 
         host: 'localhost',
-        password : '', // your mysql password
-        port : 3306, //port mysql
-        database:'monitoring_depot', // your database name
+        password : '', 
+        port : 3306, 
+        database:'monitoring_depot', 
         debug: false,
         multipleStatements: true
-    },'single') //or single
+    },'single') 
 
 );
 
-/*var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'root',
-  password : '',
-  port     : 3306,
-  database : 'db_users'
-});
-
-connection.connect()
-
-connection.query("SELECT *from tbl_users", function (err, rows, fields) {
-  if (err) throw err
-
-  console.log('The solution is: ', rows[0].username)
-})
-
-connection.end()*/
-
 app.use('/', index);
 app.use('/depot', depot);
-//app.use('/customers', customers);
-app.use('/users', users);
 
-app.use('/monitoring', function (req, res, next) {
-  res.send("You Halo Aulia Ganteng"); 
-});
+app.use('/users', users);
 
 var requestTime = function (req, res, next) {
   req.requestTime = Date.now('asasassas')
   next()
 }
 
+
+app.get('/route', function (req, res, next) {
+   var pdf = require('./routes/services').create();
+   pdf.pipe(res);
+   pdf.end();
+});
+
 app.use(requestTime)
 
-app.get('', function (req, res) {
+app.get('/ReqTime', function (req, res) {
   var responseText = 'Hello World!<br>'
   responseText += '<small>Requested at: ' + moment().format('dddd') + '</small>'
   res.send(responseText);
 })
 
 //test query
-app.get('/halo', function (req, res) {
-    console.log(req.query.name);
-    res.send('Response send to client : '+ req.requestTime);
+app.get('/halo/:halo', function (req, res, next) {
+    var halo = req.params.halo;
+    console.log(halo);
+    res.send('Response send to client : '+ halo);
 })
 
 // catch 404 and forward to error handler
@@ -121,11 +109,11 @@ app.use(function(err, req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
+
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
+
   res.status(err.status || 500);
   res.render('error');
 });
