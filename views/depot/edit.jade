@@ -19,9 +19,9 @@ block content
 					button(type='button', data-widget='collapse', data-toggle='tooltip',title='collapse').btn.btn-box-tool
 						i.fa.fa-minus		
 			.box-body
-				img(alt='Poster', src='/uploads/cloud.png', width='10%', height='10%')
+				img(alt='Poster', src='/uploads/#{data_photo}', width='10%', height='10%')
 
-				form(role='form',method='post' action='/depot/edit/#{(id_admin==undefined) ? data.id_admin : id_admin}')
+				form(role='form',method='post' action='/edit/#{(id_admin==undefined) ? data[0].id_admin : id_admin}', enctype='multipart/form-data')
 					.row
 						
 						.col-xs-6
@@ -31,10 +31,7 @@ block content
 									label
 										| Upload Photo
 									input(type='file',value="#{data[0].username}",name='imageupload',placeholder='Enter Username', autofocus).form-control
-								input(type="hidden",name="_method", value="PUT")
-								button(type='submit').btn.btn-primary
-									i.fa.fa-pencil 
-									|  Upload
+								input(type='submit', name='uploadimage', value='Upload Image')
 
 				form(role='form',method='post' action='/depot/edit/#{(id_admin==undefined) ? data[0].id_admin : id_admin}')
 					.row
@@ -42,7 +39,7 @@ block content
 						.col-xs-6
 							.box-body
 								- if (messages.msg_error) 
-									.alert.alert-danger.alert-dismissable 
+									.alert.alerst-danger.alert-dismissable 
 										button.close(type='button', data-dismiss='alert', aria-hidden='true') 
 											| ×
 										h4

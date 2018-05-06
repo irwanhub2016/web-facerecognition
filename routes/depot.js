@@ -464,12 +464,14 @@ else
 router.get('/',authentication_mdl.is_login,function(req, res, next) {
 	var personList = [];
 	var SessionEmail = req.session.is_login_email;
-	
+	var SessionPhoto = req.session.is_login_photo;
+
  	req.getConnection(function(err,connection)
 	 {
 		var sql = "SELECT * FROM toren limit 4;SELECT * FROM pengisian limit 4;SELECT * FROM lampu where id_lampu = 1;SELECT * FROM pengisian;SELECT SUM(harga) as 'Count' FROM pengisian;SELECT * FROM sms_pengirim WHERE status_sms = ?;SELECT * FROM admin where email = ?";
 		var query = connection.query(sql,['full',SessionEmail],function(err,rows, fields)
 		{
+			console.log("Photo Records: " + SessionPhoto);
 			console.log("pengisian Records: " + rows[0]);
 			console.log("toren Records: " + rows[1]);
 			console.log("lampu Records: " + rows[2]);
@@ -487,11 +489,11 @@ router.get('/',authentication_mdl.is_login,function(req, res, next) {
 			}
 			else if(rows[5].length>=1)
 			{	
-			res.render('depot/main_page',{title:"DAIM PINTAR",showAdmin:rows[6],pass:notif_pesanan_proses,data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});   
+			res.render('depot/main_page',{title:"DAIM PINTAR",data_photo:SessionPhoto,showAdmin:rows[6],pass:notif_pesanan_proses,data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});   
 			}
 			else if(rows[5].length==0)
 			{	
-			res.render('depot/main_page',{title:"DAIM PINTAR",showAdmin:rows[6],pass:notif_tangki_full,data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});
+			res.render('depot/main_page',{title:"DAIM PINTAR",data_photo:SessionPhoto,showAdmin:rows[6],pass:notif_tangki_full,data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});
 			}			
 		});
      });
@@ -500,7 +502,8 @@ router.get('/',authentication_mdl.is_login,function(req, res, next) {
 router.get('/tangki_air',authentication_mdl.is_login, function(req, res, next) {
 	var personList = [];
 	var SessionEmail = req.session.is_login_email;
-
+	var SessionPhoto = req.session.is_login_photo;
+	
 	req.getConnection(function(err,connection){
 		var sql = "SELECT * FROM toren;select ketinggian from toren where jenis_toren='Toren 2' order by id_admin desc limit 1;select ketinggian from toren where jenis_toren='Toren 1' order by id_admin desc limit 1;SELECT * FROM sms_pengirim where status_sms='pass';SELECT * FROM admin where email = ?";		
 		var query = connection.query(sql,[SessionEmail],function(err,rows, fields)
@@ -520,12 +523,12 @@ router.get('/tangki_air',authentication_mdl.is_login, function(req, res, next) {
 
 			else if(rows[3].length>=1)
 			{	
-			res.render('depot/tangki_air',{title:"DAIM Otomatis",showAdmin:rows[4],pass:notif_pesanan_proses,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});   
+			res.render('depot/tangki_air',{title:"DAIM Otomatis",data_photo:SessionPhoto,showAdmin:rows[4],pass:notif_pesanan_proses,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});   
 			console.log(req.session.is_login_email);
 			}
 			else if(rows[3].length==0)
 			{	
-			res.render('depot/tangki_air',{title:"DAIM Otomatis",showAdmin:rows[4],pass:notif_tangki_full,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});
+			res.render('depot/tangki_air',{title:"DAIM Otomatis",data_photo:SessionPhoto,showAdmin:rows[4],pass:notif_tangki_full,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});
 			console.log(req.session.is_login_email);
 			}
         	
@@ -536,8 +539,9 @@ router.get('/tangki_air',authentication_mdl.is_login, function(req, res, next) {
 
 router.get('/inbox',authentication_mdl.is_login, function(req, res, next) {
 
-	var SessionEmail = req.session.is_login_email;
-
+	var SessionEmail = req.session.is_login_email;	
+	var SessionPhoto = req.session.is_login_photo;
+	
 	req.getConnection(function(err,connection){
 		var sql = "SELECT * FROM sms_pengirim WHERE status_sms = ?;SELECT * FROM sms_pengirim;SELECT * FROM admin where email = ?";
 		var query = connection.query(sql,['full',SessionEmail],function(err,rows, fields)
@@ -549,14 +553,15 @@ router.get('/inbox',authentication_mdl.is_login, function(req, res, next) {
 			console.log("Select SMS:- " + rows[1]);
 			console.log("Count Admin:- " + rows[2]);
 			var count_stat = rows[0].length;
-			res.render('depot/inbox',{title:"DAIM Otomatis",showAdmin:rows[2],count:count_stat,data:rows[1],session_store:req.session});
+			res.render('depot/inbox',{title:"DAIM Otomatis",data_photo:SessionPhoto,showAdmin:rows[2],count:count_stat,data:rows[1],session_store:req.session});
 		});
      });
 });
 
-router.get('/pengisian2',authentication_mdl.is_login, function(req, res, next) {
+router.get('/pengisian',authentication_mdl.is_login, function(req, res, next) {
 	var SessionEmail = req.session.is_login_email;	
-	console.log(req.session.is_login_email);
+	var SessionPhoto = req.session.is_login_photo;
+
 	var personList = [];
 	req.getConnection(function(err,connection){
 		var sql = "SELECT * FROM pengisian;SELECT * FROM sms_pengirim where status_sms='pass';SELECT * FROM admin where email = ?";
@@ -575,13 +580,13 @@ router.get('/pengisian2',authentication_mdl.is_login, function(req, res, next) {
 			else if(rows[1].length>=1)
 			{	
 
-			res.render('depot/pengisian',{title:"DAIM PINTAR",showAdmin:rows[2],pass:notif_pesanan_proses,data1:rows[0],session_store:req.session});   
+			res.render('depot/pengisian',{title:"DAIM PINTAR",data_photo:SessionPhoto,showAdmin:rows[2],pass:notif_pesanan_proses,data1:rows[0],session_store:req.session});   
 			console.log(req.session.is_login_email);
 			}
 
 			else if(rows[1].length==0)
 			{	
-			res.render('depot/pengisian',{title:"DAIM PINTAR",showAdmin:rows[2],pass:notif_pesanan_proses,data1:rows[0],session_store:req.session});
+			res.render('depot/pengisian',{title:"DAIM PINTAR",data_photo:SessionPhoto,showAdmin:rows[2],pass:notif_tangki_full,data1:rows[0],session_store:req.session});
 			console.log(req.session.is_login_email);
 			}
 		});
@@ -592,6 +597,7 @@ router.get('/pengisian2',authentication_mdl.is_login, function(req, res, next) {
 router.get('/tangki_air',authentication_mdl.is_login, function(req, res, next) {
 	var personList = [];
 	var SessionEmail = req.session.is_login_email;
+	var SessionPhoto = req.session.is_login_photo;
 
 	req.getConnection(function(err,connection){
 		var sql = "SELECT * FROM toren;select ketinggian from toren where jenis_toren='Toren 2' order by id_admin desc limit 1;select ketinggian from toren where jenis_toren='Toren 1' order by id_admin desc limit 1;SELECT * FROM sms_pengirim where status_sms='pass';SELECT * FROM admin where email = ?";		
@@ -612,12 +618,12 @@ router.get('/tangki_air',authentication_mdl.is_login, function(req, res, next) {
 
 			else if(rows[3].length>=1)
 			{	
-			res.render('depot/tangki_air',{title:"DAIM Otomatis",showAdmin:rows[4],pass:notif_pesanan_proses,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});   
+			res.render('depot/tangki_air',{title:"DAIM Otomatis",data_photo:SessionPhoto,showAdmin:rows[4],pass:notif_pesanan_proses,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});   
 			console.log(req.session.is_login_email);
 			}
 			else if(rows[3].length==0)
 			{	
-			res.render('depot/tangki_air',{title:"DAIM Otomatis",showAdmin:rows[4],pass:notif_tangki_full,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});
+			res.render('depot/tangki_air',{title:"DAIM Otomatis",data_photo:SessionPhoto,showAdmin:rows[4],pass:notif_tangki_full,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});
 			console.log(req.session.is_login_email);
 			}
         	
@@ -653,32 +659,13 @@ router.get('/edit/(:id_admin)',authentication_mdl.is_login, function(req,res,nex
 
 	var SessionEmail = req.session.is_login_email;
 	var paramAdmin = req.params.id_admin;
+	var SessionPhoto = req.session.is_login_photo;
 
 	req.getConnection(function(err,connection){
 
 		var sql = "SELECT * FROM admin where id_admin=?;SELECT * FROM sms_pengirim WHERE status_sms = ?;SELECT * FROM admin where email = ?";
 		var query = connection.query(sql,[paramAdmin,'full',SessionEmail],function(err,rows,fields)
 		{
-			/*if(err)
-			{
-				var errornya  = ("Error Selecting : %s ",err );  
-				req.flash('msg_error', errors_detail); 
-				res.redirect('/depot'); 
-			}
-
-			else
-			{
-				if(rows.length <=0)
-				{
-					req.flash('msg_error', "Admin can't be find!"); 
-					res.redirect('/depot');
-				}
-				else
-				{	
-					res.render('depot/edit',{title:"Edit ",data:rows[0]});
-				}
-			}*/
-
 
 			console.log("Admin Records: " + rows[0]);
 			console.log("SMS Records: " + rows[1]);
@@ -693,12 +680,12 @@ router.get('/edit/(:id_admin)',authentication_mdl.is_login, function(req,res,nex
 
 			else if(rows[1].length>=1)
 			{	
-			res.render('depot/edit',{title:"Edit ",data:rows[2], showAdmin:rows[2], pass:notif_pesanan_proses});   
+			res.render('depot/edit',{title:"Edit ",data_photo:SessionPhoto,data:rows[2], showAdmin:rows[2], pass:notif_pesanan_proses});   
 			console.log(req.session.is_login_email);
 			}
 			else if(rows[1].length==0)
 			{	
-			res.render('depot/edit',{title:"Edit ",data:rows[2], showAdmin:rows[2], pass:notif_tangki_full});   
+			res.render('depot/edit',{title:"Edit ",data_photo:SessionPhoto,data:rows[2], showAdmin:rows[2], pass:notif_tangki_full});   
 			console.log(req.session.is_login_email);
 			}
 		});

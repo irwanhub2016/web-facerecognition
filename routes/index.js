@@ -31,13 +31,13 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-router.post('/', upload.single('imageupload'),function(req, res) {
+router.post('/edit/(:id_admin)', upload.single('imageupload'),function(req, res) {
 
 var valuePhoto = {
 			photo:x
 		}
 
-		var update_lampu = 'update admin SET ? where id_admin=5';
+		var update_lampu = 'update admin SET ? where id_admin= ' + req.params.id_admin;
 
 		req.getConnection(function(err,connection){
 			var queryPengisian = connection.query(update_lampu, valuePhoto, function(err, result){
@@ -47,13 +47,24 @@ var valuePhoto = {
 				}
 				else
 				{
-				res.json(
+
+					if (req.session.is_login) 
+					{ 
+						console.log(req.session.is_login_email);
+						return res.redirect('/logout'); 
+					}
+					else
+					{
+						console.log(req.session.v_email);
+						res.render('main/login',{title:"Login | DAIM PINTAR"});}
+
+				/*res.json(
 				  {
 				    status : true,
 				    message : "Succesfully upload",
 				    photo : x
 				  }
-				);
+				);*/
 				console.log("Sukses ambil dan simpan data Photo");
 				}		
 			});
@@ -126,6 +137,7 @@ router.get('/login',function(req,res,next)
 router.post('/login',function(req,res,next){
 	session_store=req.session;
 	session_email=req.session;
+	session_photo=req.session;
 	req.assert('txtEmail', 'Please fill the Username').notEmpty();
 	req.assert('txtEmail', 'Email not valid').isEmail();
 	req.assert('txtPassword', 'Please fill the Password').notEmpty();
@@ -138,8 +150,6 @@ router.post('/login',function(req,res,next){
 			var query = connection.query('select * from admin where email="'+v_email+'" and password=md5("'+v_pass+'")',function(err,rows)
 			{
 
-
-				console.log("Photo " + rows[0].photo);
 				if(err)
 				{
 
@@ -159,7 +169,9 @@ router.post('/login',function(req,res,next){
 					{	
 						session_store.is_login = true;
 						session_email.is_login_email = v_email;
-						console.log("Photo " + rows[0].photo);
+						var data_photo = rows[0].photo;
+						session_photo.is_login_photo = data_photo;
+						//console.log("Photo " + session_photo.is_login_photo);
 						res.redirect('/depot');
 					}
 				}

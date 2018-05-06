@@ -20,12 +20,12 @@ header.main-header
 	
 				li.dropdown.user.user-menu
 					a(href='#',data-toggle='dropdown').dropdown-toggle
-						img(src='/adminlte/dist/img/user2-160x160.jpg',alt='User Image').user-image
+						img(src='/uploads/#{data_photo}',alt='User Image').user-image
 						span.hidden-xs
 							| #{showAdmin[0].username}
 					ul.dropdown-menu
 						li.user-header
-							img(src='/adminlte/dist/img/user2-160x160.jpg',alt='User Image').img-circle
+							img(src='/uploads/#{data_photo}',alt='User Image').img-circle
 							p
 								| #{showAdmin[0].username} - Administrator
 								small
