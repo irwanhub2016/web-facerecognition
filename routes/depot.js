@@ -469,7 +469,7 @@ router.get('/',authentication_mdl.is_login,function(req, res, next) {
  	req.getConnection(function(err,connection)
 	 {
 		var sql = "SELECT * FROM toren limit 4;SELECT * FROM pengisian limit 4;SELECT * FROM lampu where id_lampu = 1;SELECT * FROM pengisian;SELECT SUM(harga) as 'Count' FROM pengisian;SELECT * FROM sms_pengirim WHERE status_sms = ?;SELECT * FROM admin where email = ?";
-		var query = connection.query(sql,['full',SessionEmail],function(err,rows, fields)
+		var query = connection.query(sql,['pass',SessionEmail],function(err,rows, fields)
 		{
 			console.log("Photo Records: " + SessionPhoto);
 			console.log("pengisian Records: " + rows[0]);
@@ -543,18 +543,32 @@ router.get('/inbox',authentication_mdl.is_login, function(req, res, next) {
 	var SessionPhoto = req.session.is_login_photo;
 	
 	req.getConnection(function(err,connection){
-		var sql = "SELECT * FROM sms_pengirim WHERE status_sms = ?;SELECT * FROM sms_pengirim;SELECT * FROM admin where email = ?";
-		var query = connection.query(sql,['full',SessionEmail],function(err,rows, fields)
+		var sql = "SELECT * FROM sms_pengirim where status_sms='pass';SELECT * FROM sms_pengirim;SELECT * FROM admin where email = ?;SELECT * FROM sms_pengirim where status_sms='full'";
+		var query = connection.query(sql,[SessionEmail],function(err,rows, fields)
 		{
+
+			console.log("SMS Records:- " + rows[0]);
+			console.log("List Records:- " + rows[1]);
+			console.log("Admin Records:- " + rows[2]);
+			var count_stat = rows[3].length;
+
 			if(err)
-			var errornya  = ("Error Selecting : %s ",err );   
-			req.flash('msg_error', errornya);   
-			console.log("Count SMS:- " + rows[0].length);
-			console.log("Select SMS:- " + rows[1]);
-			console.log("Count Admin:- " + rows[2]);
-			var count_stat = rows[0].length;
-			res.render('depot/inbox',{title:"DAIM Otomatis",data_photo:SessionPhoto,showAdmin:rows[2],count:count_stat,data:rows[1],session_store:req.session});
+			{
+				var errornya  = ("Error Selecting : %s ",err );
+				req.flash('msg_error', errornya);
+			}
+
+			else if(rows[0].length>=1)
+			{	
+			res.render('depot/inbox',{title:"DAIM Otomatis",data_photo:SessionPhoto,pass:notif_pesanan_proses,showAdmin:rows[2],count:count_stat,data:rows[1],session_store:req.session});
+			}
+
+			else if(rows[0].length==0)
+			{	
+			res.render('depot/inbox',{title:"DAIM Otomatis",data_photo:SessionPhoto,pass:notif_tangki_full,showAdmin:rows[2],count:count_stat,data:rows[1],session_store:req.session});
+			}
 		});
+         console.log(query.sql);
      });
 });
 
