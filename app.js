@@ -94,8 +94,8 @@ app.get('/ReqTime', function (req, res) {
 })
 
 //test query
-app.get('/halo/:halo', function (req, res, next) {
-    var halo = req.params.halo;
+app.get('/halo', function (req, res, next) {
+    var halo = req.param('halo');
     console.log(halo);
     res.send('Response send to client : '+ halo);
 })

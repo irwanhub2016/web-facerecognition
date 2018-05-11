@@ -45,7 +45,7 @@ router.get('/account',authentication_mdl.is_login, function(req, res, next) {
      });
 });
 
-router.get('/getPengisian', function(req, res, next) {
+/*router.get('/getPengisian', function(req, res, next) {
 
 moment.locale('id');
 var v_berat = req.param('berat');
@@ -104,6 +104,92 @@ var valueLampu = {
 console.log("Ambil Data : " +"| Berat : " + v_berat + "| Lampu : " + v_status_lampu 
 	+ "| Harga : " + v_harga + "| Tanggal : " + v_tanggal + "| Jam : " + v_jam + " " + v_id_pengisian);
 
+res.send(req.params);
+next();
+});*/
+
+router.get('/getPengisian/berat', function(req, res, next) {
+
+moment.locale('en-gb');//format UK
+
+var v_berat = req.param('berat');
+v_harga = 5000;
+v_jam = moment().format('LTS');
+
+moment.locale('id');//format Indo
+v_tanggal = moment().format('LL');
+v_id_admin = 5; 
+
+var id_unik = "Peng-";
+var lasttime = v_jam.substr(v_jam.length - 1);
+var filterberat = v_berat.substr(0,5);
+var v_berat_kg = (filterberat)/1000;
+
+var random = randomstring.generate(7);
+
+v_id_pengisian = id_unik + random+ lasttime ;
+
+
+var valuePengisian = {
+			id_pengisian: v_id_pengisian,
+			id_admin: '5',
+			date_pengisian:v_tanggal,
+			time:v_jam,
+			harga: '5000',
+			berat: v_berat_kg
+		}
+
+		var insert_pengisian = 'INSERT INTO pengisian SET ?';
+
+		req.getConnection(function(err,connection){
+			var queryPengisian = connection.query(insert_pengisian, valuePengisian, function(err, result){
+				if(err)
+				{
+				console.log("Gagal ambil dan simpan data Pengisian");
+				}
+				else
+				{
+				console.log("Sukses ambil dan simpan data Pengisian");
+				}		
+			});
+		});
+
+console.log("Ambil Data : " +"| Berat : " + v_berat_kg + " Kg " + "| Harga : " + v_harga + "| Tanggal : " + v_tanggal  + " | ID Pengisian : " + v_id_pengisian);
+
+res.send(req.params);
+next();
+});
+
+router.get('/getPengisian/lampu', function(req, res, next) {
+
+moment.locale('id');
+var v_status_lampu = req.param('status_lampu'); //toren besar
+v_jam = moment().format('LTS');
+v_tanggal = moment().format('LL');
+v_id_admin = 5; 
+
+var valueLampu = {
+			time:v_jam,
+			status_lampu: v_status_lampu
+		}
+
+		var update_lampu = 'update lampu SET ? where id_lampu=1';
+
+		req.getConnection(function(err,connection){
+
+			var queryLampu = connection.query(update_lampu, valueLampu, function(err, result){
+				if(err)
+				{
+				console.log("Gagal ambil dan simpan data Lampu");
+				}
+				else
+				{
+				console.log("Sukses ambil dan simpan data Lampu");
+				}		
+			});
+		});
+
+console.log("Ambil Data : " + "Lampu : " + v_status_lampu );
 res.send(req.params);
 next();
 });
@@ -537,7 +623,7 @@ router.get('/tangki_air',authentication_mdl.is_login, function(req, res, next) {
      });
 });
 
-router.get('/inbox',authentication_mdl.is_login, function(req, res, next) {
+router.get('/sms_order',authentication_mdl.is_login, function(req, res, next) {
 
 	var SessionEmail = req.session.is_login_email;	
 	var SessionPhoto = req.session.is_login_photo;
@@ -560,12 +646,12 @@ router.get('/inbox',authentication_mdl.is_login, function(req, res, next) {
 
 			else if(rows[0].length>=1)
 			{	
-			res.render('depot/inbox',{title:"DAIM Otomatis",data_photo:SessionPhoto,pass:notif_pesanan_proses,showAdmin:rows[2],count:count_stat,data:rows[1],session_store:req.session});
+			res.render('depot/sms_order',{title:"DAIM Otomatis",data_photo:SessionPhoto,pass:notif_pesanan_proses,showAdmin:rows[2],count:count_stat,data:rows[1],session_store:req.session});
 			}
 
 			else if(rows[0].length==0)
 			{	
-			res.render('depot/inbox',{title:"DAIM Otomatis",data_photo:SessionPhoto,pass:notif_tangki_full,showAdmin:rows[2],count:count_stat,data:rows[1],session_store:req.session});
+			res.render('depot/sms_order',{title:"DAIM Otomatis",data_photo:SessionPhoto,pass:notif_tangki_full,showAdmin:rows[2],count:count_stat,data:rows[1],session_store:req.session});
 			}
 		});
          console.log(query.sql);
