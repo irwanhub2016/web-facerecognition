@@ -4,10 +4,9 @@ var moment = require('moment');
 var randomstring = require('randomstring');
 var md5 = require('md5');
 var authentication_mdl = require('../middlewares/authentication');
-var apiKey = 'kCGM6nsJ6XUHt8FclKDFywoLixMnMrhB15Ll75Fuc9Z'; //untuk IFTTT
+var apiKey = 'bmWrj4Wl_254bCnzSRoW_P'; //untuk IFTTT
 /*
 kCGM6nsJ6XUHt8FclKDFywoLixMnMrhB15Ll75Fuc9Z -> irwansyarifudin16@gmail.com
-
 */
 var IFTTTMaker = require('iftttmaker')(apiKey);
 var session_store;
@@ -196,6 +195,8 @@ next();
 
 router.get('/getTangkiAirData', function(req, res) {
 
+///:sensor1/:sensor2/:order
+
 moment.locale('id');
 var v_sensor1 = req.param('sensor1');
 var v_sensor2 = req.param('sensor2');
@@ -315,29 +316,20 @@ res.send("yess !");
 
 router.get('/getIFTTT', function(req, res, next) {
 
+///:sensor1/:sensor2/:order
+
+var x;
+
+moment.locale('en-gb');//format UK
+
 var v_sensor1 = req.param('sensor1');
 var v_sensor2 = req.param('sensor2');
 var ambil_sensor = req.param('order');
-
-v_date	= moment().format('LL');
 v_time = moment().format('LTS');
 
-var kontenSMSPass = {
+moment.locale('id');//format Indo
 
-			no_telp_pengirim: '123',
-			time:v_time,
-			date:v_date,
-			isi_sms: 'halohaloooo',
-			status_sms: 'pass'
-		}
-
-var updateNilaiTorenBesar = {
-			ketinggian: v_sensor1
-		}
-
-var updateNilaiTorenSedang = {
-			ketinggian: v_sensor2
-		}
+v_date	= moment().format('LL');
 
 if(ambil_sensor=='pass')
 { 
@@ -359,6 +351,15 @@ if(ambil_sensor=='pass')
 						    if(rows.length >=1 )
 							{
 
+
+									var updateNilaiTorenBesar = {
+												ketinggian: v_sensor1
+											}
+
+									var updateNilaiTorenSedang = {
+												ketinggian: v_sensor2
+											}
+											
 								var QueryUpdateNilaiTorenBesar = connection.query('update toren set ? where jenis_toren="Toren 1" order by id_admin desc limit 1',updateNilaiTorenBesar,function(err,rows, fields)
 								{
 
@@ -373,7 +374,7 @@ if(ambil_sensor=='pass')
 										}
 								});
 
-								var QueryUpdateNilaiTorenSedang = connection.query('update toren set ? where jenis_toren="Toren 1" order by id_admin desc limit 1',updateNilaiTorenSedang,function(err,rows, fields)
+								var QueryUpdateNilaiTorenSedang = connection.query('update toren set ? where jenis_toren="Toren 2" order by id_admin desc limit 1',updateNilaiTorenSedang,function(err,rows, fields)
 								{
 
 										if(err)
@@ -392,6 +393,116 @@ if(ambil_sensor=='pass')
 							else if (rows.length <= 0)
 							{	
 								console.log("Belum ada kiriman sms");
+
+											var validasiJam = moment().format('HH');
+											
+											if(validasiJam < 11 && validasiJam >= 1)
+											{
+												console.log("Selamat Pagi. Pengiriman SMS Otomatis pemesanan air akan dikirim");												
+												
+												var waktuPagi = 'pagi';
+	
+												
+												var request = {
+										          event: 'PesanAir',
+										          values: {
+										            value1: waktuPagi
+										          }
+										        };
+      											triggerIFTTT();
+											}
+
+											else if (validasiJam < 15 && validasiJam > 11) 
+
+											{
+											console.log("Selamat Siang. Pengiriman SMS Otomatis pemesanan air akan dikirim");
+
+												var waktuSiang = 'siang';
+												global.ySA=waktuSiang;
+												x=ySA;
+
+												var request = {
+										          event: 'PesanAir',
+										          values: {
+										            value1: waktuSiang
+										          }
+										        };
+												triggerIFTTT();										        
+											}	
+
+											else if (validasiJam < 19 && validasiJam > 15) 
+
+											{
+											console.log("Selamat Sore. Pengiriman SMS Otomatis pemesanan air akan dikirim");												
+												
+												var waktuSore = 'sore';
+												global.ySO=waktuSore;
+												x=ySO;
+
+												var request = {
+										          event: 'PesanAir',
+										          values: {
+										            value1: waktuSore
+										          }
+										        };
+
+												triggerIFTTT();	
+											}
+
+											else if (validasiJam < 24 && validasiJam >= 19) 
+
+											{
+											console.log("Selamat Malam. Pengiriman SMS Otomatis pemesanan air akan dikirim");
+
+												var waktuMalam = 'malam';
+												global.yM=waktuMalam;
+												x=yM;
+
+												var request = {
+										          event: 'PesanAir',
+										          values: {
+										            value1: waktuMalam
+										          }
+										        };
+												triggerIFTTT();
+											}
+
+											function triggerIFTTT()
+											{
+
+
+										        IFTTTMaker.send(request, function (error) {
+										          if (error) 
+										          {
+										            console.log('Maaf. Request pengiriman SMS gagal:', error);
+										          } 
+										          else 
+										          {
+										            console.log('Selamat ! SMS otomatis berhasil dikirim ke distributor air.');
+										            getValue();
+										          }  
+									        	}); 												
+											}
+
+								function getValue()
+								{			
+
+									var kontenSMSPass = {
+
+												no_telp_pengirim: '123',
+												time:v_time,
+												date:v_date,
+												isi_sms: 'Selamat ' + x + '. Tolong kirim air ya.', 
+												status_sms: 'pass'
+											}
+
+									var updateNilaiTorenBesar = {
+												ketinggian: v_sensor1
+											}
+
+									var updateNilaiTorenSedang = {
+												ketinggian: v_sensor2
+											}
 
 								var queryInsert = connection.query(insert_konten_sms, kontenSMSPass,function(err,result, fields)
 								{
@@ -434,97 +545,11 @@ if(ambil_sensor=='pass')
 											});
 
 											console.log("Sukses kirim dan simpan data SMS");
-
-											var validasiJam = moment().format('HH');
-											
-											if(validasiJam < 11 && validasiJam >= 1)
-											{
-												console.log("Selamat Pagi. Pengiriman SMS Otomatis pemesanan air akan dikirim");												
-												
-												var waktuPagi = 'pagi';
-
-												var request = {
-										          event: 'pesangalon',
-										          values: {
-										            value1: waktuPagi
-										          }
-										        };
-      											triggerIFTTT();
-											}
-
-											else if (validasiJam < 15 && validasiJam > 11) 
-
-											{
-											console.log("Selamat Siang. Pengiriman SMS Otomatis pemesanan air akan dikirim");
-
-												var waktuSiang = 'siang';
-
-												var request = {
-										          event: 'pesangalon',
-										          values: {
-										            value1: waktuSiang
-										          }
-										        };
-												triggerIFTTT();										        
-											}	
-
-											else if (validasiJam < 19 && validasiJam > 15) 
-
-											{
-											console.log("Selamat Sore. Pengiriman SMS Otomatis pemesanan air akan dikirim");												
-												
-												var waktuSore = 'sore';
-
-												var request = {
-										          event: 'pesangalon',
-										          values: {
-										            value1: waktuSore
-										          }
-										        };
-
-												triggerIFTTT();	
-											}
-
-											else if (validasiJam < 24 && validasiJam >= 19) 
-
-											{
-											console.log("Selamat Malam. Pengiriman SMS Otomatis pemesanan air akan dikirim");
-
-												var waktuMalam = 'malam';
-
-												var request = {
-										          event: 'pesangalon',
-										          values: {
-										            value1: waktuMalam
-										          }
-										        };
-												triggerIFTTT();
-											}
-
-											function triggerIFTTT()
-											{
-
-												/*var request = {
-										          event: 'pesangalon2018',
-										          values: {
-										            value1: 'siang'
-										          }
-										        };*/
-
-										        IFTTTMaker.send(request, function (error) {
-										          if (error) 
-										          {
-										            console.log('Maaf. Request pengiriman SMS gagal:', error);
-										          } 
-										          else 
-										          {
-										            console.log('Selamat ! SMS otomatis berhasil dikirim ke distributor air.');
-										          }  
-									        	}); 												
-											}
-
+											console.log("Waktu : " + x);
 										}
 								});
+
+								}
 
 							}
 

@@ -58,12 +58,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(
     connection(mysql,{
       user: 'root', 
-        host: 'localhost',
-        password : '', 
-        port : 3306, 
-        database:'monitoring_depot', 
-        debug: false,
-        multipleStatements: true
+      host: 'localhost',
+      password : '', 
+      port : 3306, 
+      database:'monitoring_depot', 
+      debug: false,
+      multipleStatements: true
     },'single') 
 
 );
