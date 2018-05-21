@@ -4,9 +4,10 @@ var moment = require('moment');
 var randomstring = require('randomstring');
 var md5 = require('md5');
 var authentication_mdl = require('../middlewares/authentication');
-var apiKey = 'bmWrj4Wl_254bCnzSRoW_P'; //untuk IFTTT
+var apiKey = 'kCGM6nsJ6XUHt8FclKDFywoLixMnMrhB15Ll75Fuc9Z'; //untuk IFTTT
 /*
 kCGM6nsJ6XUHt8FclKDFywoLixMnMrhB15Ll75Fuc9Z -> irwansyarifudin16@gmail.com
+bmWrj4Wl_254bCnzSRoW_P
 */
 var IFTTTMaker = require('iftttmaker')(apiKey);
 var session_store;
@@ -193,16 +194,18 @@ res.send(req.params);
 next();
 });
 
-router.get('/getTangkiAirData', function(req, res) {
+router.get('/getTangkiAirData/:sensor1/:sensor2/:order', function(req, res) {
 
 ///:sensor1/:sensor2/:order
 
-moment.locale('id');
 var v_sensor1 = req.param('sensor1');
 var v_sensor2 = req.param('sensor2');
 var v_status_full = req.param('order');
 
+moment.locale('en-gb');//format UK
 v_jam = moment().format('LTS');
+
+moment.locale('id');
 v_tanggal = moment().format('LL');
 
 
@@ -314,7 +317,7 @@ res.send("yess !");
 //next()
 });
 
-router.get('/getIFTTT', function(req, res, next) {
+router.get('/getIFTTT/:sensor1/:sensor2/:order', function(req, res, next) {
 
 ///:sensor1/:sensor2/:order
 
@@ -396,15 +399,16 @@ if(ambil_sensor=='pass')
 
 											var validasiJam = moment().format('HH');
 											
-											if(validasiJam < 11 && validasiJam >= 1)
+											if(validasiJam < 11 && validasiJam >= 0)
 											{
 												console.log("Selamat Pagi. Pengiriman SMS Otomatis pemesanan air akan dikirim");												
 												
 												var waktuPagi = 'pagi';
-	
+												global.ySP=waktuPagi;
+												x=ySP;
 												
 												var request = {
-										          event: 'PesanAir',
+										          event: 'pesanair2018',
 										          values: {
 										            value1: waktuPagi
 										          }
@@ -422,7 +426,7 @@ if(ambil_sensor=='pass')
 												x=ySA;
 
 												var request = {
-										          event: 'PesanAir',
+										          event: 'pesanair2018',
 										          values: {
 										            value1: waktuSiang
 										          }
@@ -440,7 +444,7 @@ if(ambil_sensor=='pass')
 												x=ySO;
 
 												var request = {
-										          event: 'PesanAir',
+										          event: 'pesanair2018',
 										          values: {
 										            value1: waktuSore
 										          }
@@ -459,7 +463,7 @@ if(ambil_sensor=='pass')
 												x=yM;
 
 												var request = {
-										          event: 'PesanAir',
+										          event: 'pesanair2018',
 										          values: {
 										            value1: waktuMalam
 										          }
@@ -576,11 +580,13 @@ router.get('/',authentication_mdl.is_login,function(req, res, next) {
 	var personList = [];
 	var SessionEmail = req.session.is_login_email;
 	var SessionPhoto = req.session.is_login_photo;
+	var SessionIdAdmin = req.session.is_login_id;
 
+	console.log("ID Admin " + SessionIdAdmin);
  	req.getConnection(function(err,connection)
 	 {
-		var sql = "SELECT * FROM toren limit 4;SELECT * FROM pengisian limit 4;SELECT * FROM lampu where id_lampu = 1;SELECT * FROM pengisian;SELECT SUM(harga) as 'Count' FROM pengisian;SELECT * FROM sms_pengirim WHERE status_sms = ?;SELECT * FROM admin where email = ?";
-		var query = connection.query(sql,['pass',SessionEmail],function(err,rows, fields)
+		var sql = "SELECT * FROM toren limit 4;SELECT * FROM pengisian limit 4;SELECT * FROM lampu where id_lampu = 1;SELECT * FROM pengisian;SELECT SUM(harga) as 'Count' FROM pengisian;SELECT * FROM sms_pengirim WHERE status_sms = ?;SELECT * FROM admin where id_admin = ?";
+		var query = connection.query(sql,['pass',SessionIdAdmin],function(err,rows, fields)
 		{
 			console.log("Photo Records: " + SessionPhoto);
 			console.log("pengisian Records: " + rows[0]);
@@ -614,10 +620,11 @@ router.get('/tangki_air',authentication_mdl.is_login, function(req, res, next) {
 	var personList = [];
 	var SessionEmail = req.session.is_login_email;
 	var SessionPhoto = req.session.is_login_photo;
-	
+	var SessionIdAdmin = req.session.is_login_id;
+
 	req.getConnection(function(err,connection){
-		var sql = "SELECT * FROM toren;select ketinggian from toren where jenis_toren='Toren 2' order by id_admin desc limit 1;select ketinggian from toren where jenis_toren='Toren 1' order by id_admin desc limit 1;SELECT * FROM sms_pengirim where status_sms='pass';SELECT * FROM admin where email = ?";		
-		var query = connection.query(sql,[SessionEmail],function(err,rows, fields)
+		var sql = "SELECT * FROM toren;select ketinggian from toren where jenis_toren='Toren 2' order by id_admin desc limit 1;select ketinggian from toren where jenis_toren='Toren 1' order by id_admin desc limit 1;SELECT * FROM sms_pengirim where status_sms='pass';SELECT * FROM admin where id_admin = ?";		
+		var query = connection.query(sql,[SessionIdAdmin],function(err,rows, fields)
 		{
 			console.log("List Records:- " + rows[0]);
 			console.log("Toren Besar Records:- " + rows[1]);
@@ -652,10 +659,11 @@ router.get('/sms_order',authentication_mdl.is_login, function(req, res, next) {
 
 	var SessionEmail = req.session.is_login_email;	
 	var SessionPhoto = req.session.is_login_photo;
-	
+	var SessionIdAdmin = req.session.is_login_id;
+
 	req.getConnection(function(err,connection){
-		var sql = "SELECT * FROM sms_pengirim where status_sms='pass';SELECT * FROM sms_pengirim;SELECT * FROM admin where email = ?;SELECT * FROM sms_pengirim where status_sms='full'";
-		var query = connection.query(sql,[SessionEmail],function(err,rows, fields)
+		var sql = "SELECT * FROM sms_pengirim where status_sms='pass';SELECT * FROM sms_pengirim;SELECT * FROM admin where id_admin = ?;SELECT * FROM sms_pengirim where status_sms='full'";
+		var query = connection.query(sql,[SessionIdAdmin],function(err,rows, fields)
 		{
 
 			console.log("SMS Records:- " + rows[0]);
@@ -686,11 +694,12 @@ router.get('/sms_order',authentication_mdl.is_login, function(req, res, next) {
 router.get('/pengisian',authentication_mdl.is_login, function(req, res, next) {
 	var SessionEmail = req.session.is_login_email;	
 	var SessionPhoto = req.session.is_login_photo;
-
+	var SessionIdAdmin = req.session.is_login_id;
+	
 	var personList = [];
 	req.getConnection(function(err,connection){
-		var sql = "SELECT * FROM pengisian;SELECT * FROM sms_pengirim where status_sms='pass';SELECT * FROM admin where email = ?";
-		var query = connection.query(sql,[SessionEmail],function(err,rows, fields)
+		var sql = "SELECT * FROM pengisian;SELECT * FROM sms_pengirim where status_sms='pass';SELECT * FROM admin where id_admin = ?";
+		var query = connection.query(sql,[SessionIdAdmin],function(err,rows, fields)
 		{
 			console.log("List Records:- " + rows[0]);
 			console.log("SMS Records:- " + rows[1]);
@@ -723,10 +732,11 @@ router.get('/tangki_air',authentication_mdl.is_login, function(req, res, next) {
 	var personList = [];
 	var SessionEmail = req.session.is_login_email;
 	var SessionPhoto = req.session.is_login_photo;
+	var SessionIdAdmin = req.session.is_login_id;
 
 	req.getConnection(function(err,connection){
-		var sql = "SELECT * FROM toren;select ketinggian from toren where jenis_toren='Toren 2' order by id_admin desc limit 1;select ketinggian from toren where jenis_toren='Toren 1' order by id_admin desc limit 1;SELECT * FROM sms_pengirim where status_sms='pass';SELECT * FROM admin where email = ?";		
-		var query = connection.query(sql,[SessionEmail],function(err,rows, fields)
+		var sql = "SELECT * FROM toren;select ketinggian from toren where jenis_toren='Toren 2' order by id_admin desc limit 1;select ketinggian from toren where jenis_toren='Toren 1' order by id_admin desc limit 1;SELECT * FROM sms_pengirim where status_sms='pass';SELECT * FROM admin where id_admin = ?";		
+		var query = connection.query(sql,[SessionIdAdmin],function(err,rows, fields)
 		{
 			console.log("List Records:- " + rows[0]);
 			console.log("Toren Besar Records:- " + rows[1]);
@@ -785,11 +795,12 @@ router.get('/edit/(:id_admin)',authentication_mdl.is_login, function(req,res,nex
 	var SessionEmail = req.session.is_login_email;
 	var paramAdmin = req.params.id_admin;
 	var SessionPhoto = req.session.is_login_photo;
+	var SessionIdAdmin = req.session.is_login_id;
 
 	req.getConnection(function(err,connection){
 
-		var sql = "SELECT * FROM admin where id_admin=?;SELECT * FROM sms_pengirim WHERE status_sms = ?;SELECT * FROM admin where email = ?";
-		var query = connection.query(sql,[paramAdmin,'full',SessionEmail],function(err,rows,fields)
+		var sql = "SELECT * FROM admin where id_admin=?;SELECT * FROM sms_pengirim WHERE status_sms = ?;SELECT * FROM admin where id_admin = ?";
+		var query = connection.query(sql,[paramAdmin,'full',SessionIdAdmin],function(err,rows,fields)
 		{
 
 			console.log("Admin Records: " + rows[0]);

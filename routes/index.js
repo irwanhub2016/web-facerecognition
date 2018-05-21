@@ -138,6 +138,7 @@ router.post('/login',function(req,res,next){
 	session_store=req.session;
 	session_email=req.session;
 	session_photo=req.session;
+	session_id = req.session;
 	req.assert('txtEmail', 'Please fill the Username').notEmpty();
 	req.assert('txtEmail', 'Email not valid').isEmail();
 	req.assert('txtPassword', 'Please fill the Password').notEmpty();
@@ -166,9 +167,16 @@ router.post('/login',function(req,res,next){
 						res.redirect('/login');
 					}
 					else
+
 					{	
+						console.log("ID Admin : " + rows[0].id_admin);
+
 						session_store.is_login = true;
 						session_email.is_login_email = v_email;
+						
+						var ex_id_admin = rows[0].id_admin;
+						session_id.is_login_id = ex_id_admin;
+
 						var data_photo = rows[0].photo;
 						session_photo.is_login_photo = data_photo;
 						//console.log("Photo " + session_photo.is_login_photo);
