@@ -800,6 +800,7 @@ router.get('/edit/(:id_admin)',authentication_mdl.is_login, function(req,res,nex
 	req.getConnection(function(err,connection){
 
 		var sql = "SELECT * FROM admin where id_admin=?;SELECT * FROM sms_pengirim WHERE status_sms = ?;SELECT * FROM admin where id_admin = ?";
+
 		var query = connection.query(sql,[paramAdmin,'full',SessionIdAdmin],function(err,rows,fields)
 		{
 
@@ -829,12 +830,81 @@ router.get('/edit/(:id_admin)',authentication_mdl.is_login, function(req,res,nex
 });
 
 router.put('/edit/(:id_admin)',authentication_mdl.is_login, function(req,res,next){
+
+	var SessionPassword = req.session.is_login_password;
+	var SessionPhoto = req.session.is_login_photo;
+
 	req.assert('email', 'Please fill the email').notEmpty();
 	var errors = req.validationErrors();
+	v_passwordX = req.sanitize( 'password' ).escape().trim();	
+
+	if(SessionPassword==v_passwordX)
+	{
+		console.log("Sama");
+
+		if (!errors) {
+
+			console.log();
+			v_username = req.sanitize( 'username' ).escape().trim(); 
+			v_email = req.sanitize( 'email' ).escape().trim();
+
+			console.log("Password Admin : " + v_passwordX);
+			
+			var admin = {
+				username: v_username,
+				email: v_email,
+				password: SessionPassword,
+				photo:SessionPhoto
+			}
+
+			var update_sql = 'update admin SET ? where id_admin = '+req.params.id_admin;
+			req.getConnection(function(err,connection){
+				var query = connection.query(update_sql, admin, function(err, result){
+					if(err)
+					{
+						var errors_detail  = ("Error Update : %s ",err );   
+						req.flash('msg_error', errors_detail); 
+						res.render('depot/edit', 
+						{ 
+							username: req.params.username, 
+							email: req.params.email,
+							password: req.params.password,
+						});
+					}
+					else
+					{
+						req.flash('msg_info', 'Update success'); 
+						res.redirect('/depot/edit/'+req.params.id_admin);
+					}		
+				});
+			});
+		}
+		else
+		{
+			console.log(errors);
+			errors_detail = "<p>Sory there are error</p><ul>";
+			for (i in errors) 
+			{ 
+				error = errors[i]; 
+				errors_detail += '<li>'+error.msg+'</li>'; 
+			} 
+			errors_detail += "</ul>"; 
+			req.flash('msg_error', errors_detail); 
+			res.render('depot/add-admin', 
+			{ 
+				email: req.param('email'), 
+				username: req.param('username')
+			});
+		}
+	}
+	
+	else
+	{	
 	if (!errors) {
+
+		console.log();
 		v_username = req.sanitize( 'username' ).escape().trim(); 
 		v_email = req.sanitize( 'email' ).escape().trim();
-		v_passwordX = req.sanitize( 'password' ).escape().trim();
 		v_password = md5(v_passwordX);
 		console.log("Password Admin : " + v_passwordX);
 		
@@ -842,7 +912,7 @@ router.put('/edit/(:id_admin)',authentication_mdl.is_login, function(req,res,nex
 			username: v_username,
 			email: v_email,
 			password: v_password,
-			photo:''
+			photo:SessionPhoto
 		}
 
 		var update_sql = 'update admin SET ? where id_admin = '+req.params.id_admin;
@@ -884,6 +954,8 @@ router.put('/edit/(:id_admin)',authentication_mdl.is_login, function(req,res,nex
 			username: req.param('username')
 		});
 	}
+
+   }	
 });
 
 router.post('/add',authentication_mdl.is_login, function(req, res, next) {

@@ -13,7 +13,7 @@ var expressValidator = require('express-validator');
 var methodOverride = require('method-override');
 var multer = require("multer");
 var moment = require('moment');
-
+var md5 = require('md5');
 var connection  = require('express-myconnection'); 
 var mysql = require('mysql');
 
@@ -75,6 +75,7 @@ app.use('/users', users);
 
 var requestTime = function (req, res, next) {
   req.requestTime = Date.now('asasassas')
+
   next()
 }
 
@@ -94,9 +95,10 @@ app.get('/ReqTime', function (req, res) {
 })
 
 //test query
-app.get('/halo', function (req, res, next) {
+app.get('/halo/:halo', function (req, res, next) {
     var halo = req.param('halo');
     console.log(halo);
+    console.log(md5(halo));
     res.send('Response send to client : '+ halo);
 })
 

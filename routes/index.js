@@ -139,6 +139,8 @@ router.post('/login',function(req,res,next){
 	session_email=req.session;
 	session_photo=req.session;
 	session_id = req.session;
+	session_password = req.session;
+
 	req.assert('txtEmail', 'Please fill the Username').notEmpty();
 	req.assert('txtEmail', 'Email not valid').isEmail();
 	req.assert('txtPassword', 'Please fill the Password').notEmpty();
@@ -170,6 +172,7 @@ router.post('/login',function(req,res,next){
 
 					{	
 						console.log("ID Admin : " + rows[0].id_admin);
+						console.log("Password : " + rows[0].password);
 
 						session_store.is_login = true;
 						session_email.is_login_email = v_email;
@@ -179,7 +182,10 @@ router.post('/login',function(req,res,next){
 
 						var data_photo = rows[0].photo;
 						session_photo.is_login_photo = data_photo;
-						//console.log("Photo " + session_photo.is_login_photo);
+
+						var ex_password_admin = rows[0].password;
+						session_password.is_login_password = ex_password_admin;
+
 						res.redirect('/depot');
 					}
 				}
