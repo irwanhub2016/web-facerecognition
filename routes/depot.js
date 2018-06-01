@@ -4,10 +4,11 @@ var moment = require('moment');
 var randomstring = require('randomstring');
 var md5 = require('md5');
 var authentication_mdl = require('../middlewares/authentication');
-var apiKey = 'kCGM6nsJ6XUHt8FclKDFywoLixMnMrhB15Ll75Fuc9Z'; //untuk IFTTT
+var apiKey = 'kCGM6nsJ6XUHt8FclKDFyvuiImRiAKXkxnJhrpkb-pJ'; //untuk IFTTT
 /*
-kCGM6nsJ6XUHt8FclKDFywoLixMnMrhB15Ll75Fuc9Z -> irwansyarifudin16@gmail.com
-bmWrj4Wl_254bCnzSRoW_P
+kCGM6nsJ6XUHt8FclKDFyvuiImRiAKXkxnJhrpkb-pJ -> irwansyarifudin16@gmail.com
+bmWrj4Wl_254bCnzSRoW_P ->  testpot
+dM3b9lcUMk6YMLbW1a2_EvjdpyqvpkZVpfTJp23vRJv -> production
 */
 var IFTTTMaker = require('iftttmaker')(apiKey);
 var session_store;
@@ -496,7 +497,7 @@ if(ambil_sensor=='pass')
 												no_telp_pengirim: '123',
 												time:v_time,
 												date:v_date,
-												isi_sms: 'Selamat ' + x + '. Tolong kirim air ya.', 
+												isi_sms: 'Selamat ' + x + '. Saya dengan pak mahdi ingin pesan air, tolong segera dikirim hari ini. Mohon konfirmasi ke nomor saya 082155572233. Terima kasih. -Bapak Mahdi Lenteng Agung', 
 												status_sms: 'pass'
 											}
 
@@ -641,12 +642,12 @@ router.get('/tangki_air',authentication_mdl.is_login, function(req, res, next) {
 
 			else if(rows[3].length>=1)
 			{	
-			res.render('depot/tangki_air',{title:"DAIM Otomatis",data_photo:SessionPhoto,showAdmin:rows[4],pass:notif_pesanan_proses,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});   
+			res.render('depot/tangki_air',{title:"Monitoring Tangki",data_photo:SessionPhoto,showAdmin:rows[4],pass:notif_pesanan_proses,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});   
 			console.log(req.session.is_login_email);
 			}
 			else if(rows[3].length==0)
 			{	
-			res.render('depot/tangki_air',{title:"DAIM Otomatis",data_photo:SessionPhoto,showAdmin:rows[4],pass:notif_tangki_full,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});
+			res.render('depot/tangki_air',{title:"Monitoring Tangki",data_photo:SessionPhoto,showAdmin:rows[4],pass:notif_tangki_full,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});
 			console.log(req.session.is_login_email);
 			}
         	
@@ -679,12 +680,12 @@ router.get('/sms_order',authentication_mdl.is_login, function(req, res, next) {
 
 			else if(rows[0].length>=1)
 			{	
-			res.render('depot/sms_order',{title:"DAIM Otomatis",data_photo:SessionPhoto,pass:notif_pesanan_proses,showAdmin:rows[2],count:count_stat,data:rows[1],session_store:req.session});
+			res.render('depot/sms_order',{title:"SMS Order Air",data_photo:SessionPhoto,pass:notif_pesanan_proses,showAdmin:rows[2],count:count_stat,data:rows[1],session_store:req.session});
 			}
 
 			else if(rows[0].length==0)
 			{	
-			res.render('depot/sms_order',{title:"DAIM Otomatis",data_photo:SessionPhoto,pass:notif_tangki_full,showAdmin:rows[2],count:count_stat,data:rows[1],session_store:req.session});
+			res.render('depot/sms_order',{title:"SMS Order Air",data_photo:SessionPhoto,pass:notif_tangki_full,showAdmin:rows[2],count:count_stat,data:rows[1],session_store:req.session});
 			}
 		});
          console.log(query.sql);
@@ -692,6 +693,7 @@ router.get('/sms_order',authentication_mdl.is_login, function(req, res, next) {
 });
 
 router.get('/pengisian',authentication_mdl.is_login, function(req, res, next) {
+
 	var SessionEmail = req.session.is_login_email;	
 	var SessionPhoto = req.session.is_login_photo;
 	var SessionIdAdmin = req.session.is_login_id;
@@ -714,13 +716,13 @@ router.get('/pengisian',authentication_mdl.is_login, function(req, res, next) {
 			else if(rows[1].length>=1)
 			{	
 
-			res.render('depot/pengisian',{title:"DAIM PINTAR",data_photo:SessionPhoto,showAdmin:rows[2],pass:notif_pesanan_proses,data1:rows[0],session_store:req.session});   
+			res.render('depot/pengisian',{title:"Pengisian Air",data_photo:SessionPhoto,showAdmin:rows[2],pass:notif_pesanan_proses,data1:rows[0],session_store:req.session});   
 			console.log(req.session.is_login_email);
 			}
 
 			else if(rows[1].length==0)
 			{	
-			res.render('depot/pengisian',{title:"DAIM PINTAR",data_photo:SessionPhoto,showAdmin:rows[2],pass:notif_tangki_full,data1:rows[0],session_store:req.session});
+			res.render('depot/pengisian',{title:"Pengisian Air",data_photo:SessionPhoto,showAdmin:rows[2],pass:notif_tangki_full,data1:rows[0],session_store:req.session});
 			console.log(req.session.is_login_email);
 			}
 		});
@@ -728,7 +730,8 @@ router.get('/pengisian',authentication_mdl.is_login, function(req, res, next) {
      });
 });
 
-router.get('/tangki_air',authentication_mdl.is_login, function(req, res, next) {
+
+router.get('/rincian',authentication_mdl.is_login, function(req, res, next) {
 	var personList = [];
 	var SessionEmail = req.session.is_login_email;
 	var SessionPhoto = req.session.is_login_photo;
@@ -753,12 +756,12 @@ router.get('/tangki_air',authentication_mdl.is_login, function(req, res, next) {
 
 			else if(rows[3].length>=1)
 			{	
-			res.render('depot/tangki_air',{title:"DAIM Otomatis",data_photo:SessionPhoto,showAdmin:rows[4],pass:notif_pesanan_proses,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});   
+			res.render('depot/rincian',{title:"Monitoring Tangki",data_photo:SessionPhoto,showAdmin:rows[4],pass:notif_pesanan_proses,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});   
 			console.log(req.session.is_login_email);
 			}
 			else if(rows[3].length==0)
 			{	
-			res.render('depot/tangki_air',{title:"DAIM Otomatis",data_photo:SessionPhoto,showAdmin:rows[4],pass:notif_tangki_full,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});
+			res.render('depot/rincian',{title:"Monitoring Tangki",data_photo:SessionPhoto,showAdmin:rows[4],pass:notif_tangki_full,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});
 			console.log(req.session.is_login_email);
 			}
         	
@@ -766,6 +769,7 @@ router.get('/tangki_air',authentication_mdl.is_login, function(req, res, next) {
 		console.log(query.sql);
      });
 });
+
 router.delete('/delete/:id_admin',authentication_mdl.is_login, function(req, res, next) {
 	req.getConnection(function(err,connection){
 		var admin = {

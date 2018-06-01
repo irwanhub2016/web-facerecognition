@@ -2,13 +2,13 @@ extends ../layout/base_monitoring
 block content         
         section.content-header
           h1
-            | Data Monitoring Toren
+            | Rincian Transaksi
           ol.breadcrumb
             li
               a(href='http://localhost:1234/depot')
                 i.fa.fa-dashboard
                 |  Home
-            li.active Data Monitoring Air
+            li.active Data Transaksi Pengisian
         section.content            
           .row
             .col-lg-3.col-xs-6
@@ -44,19 +44,13 @@ block content
                       tr
                         th ID
                         th Date
-                        th Time (WIB)
+                        th Time
                         th Jenis Toren
-                        th Ketinggian (cm)
+                        th Tinggi Air(cm)
                     for row in data1 
                         tr
                           td #{row.id_monitoring_toren}
                           td #{row.date}
                           td #{row.time}
                           td #{row.jenis_toren}
-                          td #{row.ketinggian}    
-                  p
-                   i
-                    | *Keterangan 
-                    b Toren 1 : Toren Ukuran Besar  
-                    |  & &nbsp;
-                    b Toren 2 : Toren Ukuran Sedang                          
+                          td #{row.ketinggian}                                             

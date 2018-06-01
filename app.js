@@ -40,8 +40,10 @@ app.use(session({
   resave: true,
   saveUninitialized: true
 }));
+
 app.use(flash());
 app.use(expressValidator());
+
 app.use(methodOverride(function(req, res){
 
  if (req.body && typeof req.body == 'object' && '_method' in req.body) 
@@ -94,7 +96,7 @@ app.get('/ReqTime', function (req, res) {
   res.send(responseText);
 })
 
-//test query
+
 app.get('/halo/:halo', function (req, res, next) {
     var halo = req.param('halo');
     console.log(halo);
@@ -102,14 +104,14 @@ app.get('/halo/:halo', function (req, res, next) {
     res.send('Response send to client : '+ halo);
 })
 
-// catch 404 and forward to error handler
+
 app.use(function(err, req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
 
-// error handler
+
 app.use(function(err, req, res, next) {
 
   res.locals.message = err.message;

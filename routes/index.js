@@ -53,6 +53,7 @@ var valuePhoto = {
 						console.log(req.session.is_login_email);
 						return res.redirect('/logout'); 
 					}
+
 					else
 					{
 						console.log(req.session.v_email);
