@@ -195,7 +195,7 @@ res.send(req.params);
 next();
 });
 
-router.get('/getTangkiAirData/:sensor1/:sensor2/:order', function(req, res) {
+router.get('/getTangkiAirData', function(req, res) {
 
 ///:sensor1/:sensor2/:order
 
@@ -318,7 +318,7 @@ res.send("yess !");
 //next()
 });
 
-router.get('/getIFTTT/:sensor1/:sensor2/:order', function(req, res, next) {
+router.get('/getIFTTT', function(req, res, next) {
 
 ///:sensor1/:sensor2/:order
 
