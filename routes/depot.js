@@ -318,7 +318,7 @@ res.send("yess !");
 //next()
 });
 
-router.get('/getIFTTT/:sensor1/:sensor2/:order', function(req, res, next) {
+router.get('/getIFTTT', function(req, res, next) {
 
 ///:sensor1/:sensor2/:order
 
