@@ -59,9 +59,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(
     connection(mysql,{
-      user: 'root', 
+      user: 'phpmyadmin', 
       host: 'localhost',
-      password : '', 
+      password : 'B79cLqirBkMA', 
       port : 3306, 
       database:'monitoring_depot', 
       debug: false,

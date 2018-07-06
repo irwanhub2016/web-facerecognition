@@ -195,7 +195,7 @@ res.send(req.params);
 next();
 });
 
-router.get('/getTangkiAirData/:sensor1/:sensor2/:order', function(req, res) {
+router.get('/getTangkiAirData', function(req, res) {
 
 ///:sensor1/:sensor2/:order
 
