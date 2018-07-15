@@ -14,7 +14,7 @@ var methodOverride = require('method-override');
 var multer = require("multer");
 var moment = require('moment');
 var md5 = require('md5');
-var connection  = require('express-myconnection'); 
+var connection  = require('express-myconnection');
 var mysql = require('mysql');
 
 var upload = multer({ dest: 'uploads/' })
@@ -46,12 +46,12 @@ app.use(expressValidator());
 
 app.use(methodOverride(function(req, res){
 
- if (req.body && typeof req.body == 'object' && '_method' in req.body) 
-  { 
+ if (req.body && typeof req.body == 'object' && '_method' in req.body)
+  {
       var method = req.body._method;
       delete req.body._method;
       return method;
-    } 
+    }
   }));
 
 app.use(cookieParser());
@@ -59,20 +59,21 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(
     connection(mysql,{
-      user: 'root', 
+      user: 'root',
       host: 'localhost',
-      password : '', 
-      port : 3306, 
-      database:'monitoring_depot', 
+      password : '',
+      port : 3306,
+      database:'monitoring_depot',
       debug: false,
       multipleStatements: true
-    },'single') 
+    },'single')
 
 );
 
-app.use('/', index);
-app.use('/depot', depot);
 
+app.use('/', index);
+
+app.use('/depot', depot);
 app.use('/users', users);
 
 var requestTime = function (req, res, next) {
@@ -101,7 +102,6 @@ app.get('/halo/:halo', function (req, res, next) {
     var halo = req.param('halo');
     console.log(halo);
     console.log(md5(halo));
-    res.send('Response send to client : '+ halo);
 })
 
 

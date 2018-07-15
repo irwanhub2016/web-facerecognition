@@ -584,6 +584,7 @@ router.get('/',authentication_mdl.is_login,function(req, res, next) {
 	var SessionIdAdmin = req.session.is_login_id;
 
 	console.log("ID Admin " + SessionIdAdmin);
+
  	req.getConnection(function(err,connection)
 	 {
 		var sql = "SELECT * FROM toren limit 4;SELECT * FROM pengisian limit 4;SELECT * FROM lampu where id_lampu = 1;SELECT * FROM pengisian;SELECT SUM(harga) as 'Count' FROM pengisian;SELECT * FROM sms_pengirim WHERE status_sms = ?;SELECT * FROM admin where id_admin = ?";
