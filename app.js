@@ -23,9 +23,10 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+
 //app.set('view engine', 'pug');
-// uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -59,19 +60,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(
     connection(mysql,{
-<<<<<<< HEAD
       user: 'root',
       host: 'localhost',
       password : '',
       port : 3306,
       database:'monitoring_depot',
-=======
-      user: 'phpmyadmin', 
-      host: 'localhost',
-      password : 'B79cLqirBkMA', 
-      port : 3306, 
-      database:'monitoring_depot', 
->>>>>>> ca88a5d3146cfbfaf9a85647af0086a30a3fa06b
       debug: false,
       multipleStatements: true
     },'single')
