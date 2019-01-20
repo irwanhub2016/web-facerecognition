@@ -1,0 +1,41 @@
+aside.main-sidebar
+	section.sidebar
+		.user-panel
+			.pull-left.image
+				img(src='/uploads/#{data_photo}',alt='User Image').img-circle
+			.pull-left.info
+				p #{showAdmin[0].username}
+				a(href='#')
+					i.fa.fa-circle.text-success 
+					| Online
+			br		
+			br
+		ul.sidebar-menu
+			li.header
+				| Main Navigation
+			li.treeview
+				a(href='#')
+					i.fa.fa-dashboard
+					span
+						| Dashboard
+					span.pull-right-container
+						i.fa.fa-angle-left.pull-right
+				ul.treeview-menu
+					li
+						a(href='http://localhost:1234/depot/pengisian')
+							i.fa.fa-circle-o
+							| Absensi Mahasiswa
+					li
+						a(href='http://localhost:1234/depot/tangki_air')					
+							i.fa.fa-circle-o
+							| Rekaptulasi Absensi						
+			//li.treeview
+				a(href='#')
+					i.fa.fa-files-o
+					span
+						| Dokumentasi
+				ul.treeview-menu
+					li
+						a(href='http://localhost:1234/depot/rincian')
+							i.fa.fa-circle-o
+							| Pantau Transaksi Pengisian

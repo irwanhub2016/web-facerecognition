@@ -9,6 +9,7 @@ var session = require('express-session');
 var index = require('./routes/index');
 var users = require('./routes/users');
 var depot = require('./routes/depot');
+var dosen = require('./routes/dosen');
 var expressValidator = require('express-validator');
 var methodOverride = require('method-override');
 var multer = require("multer");
@@ -76,6 +77,7 @@ app.use('/', index);
 
 app.use('/depot', depot);
 app.use('/users', users);
+app.use('/dosen', dosen)
 
 var requestTime = function (req, res, next) {
   req.requestTime = Date.now('asasassas')

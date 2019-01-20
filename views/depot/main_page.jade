@@ -17,28 +17,27 @@ block content
             .col-lg-3.col-xs-6
               .info-box
                 span.info-box-icon.bg-purple
-                  i.fa.fa-money
+                  i.fa.fa-user
                 .info-box-content
-                  span.info-box-text Cost
-                  span.info-box-number
-                    small Rp
-                    |  #{count_transaksiSum[0].Count}
+                  span.info-box-text Absensi Harian
+                  span.info-box-number #{count_transaksiData}
+                    small &nbsp; Mahasiswa
                 // /.info-box-content
               // /.info-box
             // /.col
             .col-md-3.col-sm-6.col-xs-12
               .info-box
                 span.info-box-icon.bg-green
-                  i.fa.fa-list-alt
+                  i.fa.fa-user
                 .info-box-content
-                  span.info-box-text Jumlah Transaksi
+                  span.info-box-text Rekaptulasi Absensi
                   span.info-box-number #{count_transaksiData}
-                    small &nbsp; galon
+                    small &nbsp; 
             .col-lg-3.col-xs-6
-              .info-box
-                span.info-box-icon.bg-yellow
-                  i.fa.fa-sun-o
-                .info-box-content
+              //.info-box
+                //span.info-box-icon.bg-yellow
+                  //i.fa.fa-sun-o
+                //.info-box-content
                   span.info-box-text Status Lampu
                   span.info-box-number #{data_lampu[0].status_lampu}
 
@@ -46,32 +45,33 @@ block content
             .col-xs-12
               .box
                 .box-header
-                  h3.box-title Data Pengisian Air
+                  h3.box-title Data Absensi Mahasiswa
                 // /.box-header
                 .box-body
                   table#example1.table.table-bordered.table-striped
                     thead
                       tr
-                        th ID Pengisian
-                        th Date
-                        th Time(WIB)
-                        th Harga(Rp)
-                        th Berat(Kg)
-                        th Volume(liter)
+                        th No
+                        th NIM
+                        th Tanggal Absen
+                        th Jam Absen
+                        th Matakuliah
+                        th Aksi
                     for row in data_pengisian 
                         tr
-                          td #{row.id_pengisian}
-                          td #{row.date_pengisian}
-                          td #{row.time}
-                          td #{row.harga}
-                          td #{row.berat}
-                          td 19
+                          td #{row.no}
+                          td #{row.nim}
+                          td #{row.tgl_absen}
+                          td #{row.jam_absen}
+                          td #{row.id_matkul}
+                          td 
+                            a(href='http://localhost:1234/depot') edit
                   a(href='/depot/Pengisian')
                     p Lihat selengkapnya
 
               .box
                 .box-header
-                  h3.box-title Data Monitoring Air
+                  h3.box-title Data Rekaptulasi Mahasiswa
                 // /.box-header
                 .box-body
                   table#example1.table.table-bordered.table-striped

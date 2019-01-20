@@ -608,92 +608,17 @@ router.get('/',authentication_mdl.is_login,function(req, res, next) {
 			}
 			else if(rows[5].length>=1)
 			{	
-			res.render('depot/main_page',{title:"DAIM PINTAR",data_photo:SessionPhoto,showAdmin:rows[6],pass:notif_pesanan_proses,data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});   
-			
+			res.render('dosen/main_page',{title:"DAIM PINTAR",data_photo:SessionPhoto,showAdmin:rows[6],pass:notif_pesanan_proses,data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});   
 			}
 			else if(rows[5].length==0)
 			{	
-			res.render('depot/main_page',{title:"DAIM PINTAR",data_photo:SessionPhoto,showAdmin:rows[6],pass:notif_tangki_full,data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});
-			
+			res.render('dosen/main_page',{title:"DAIM PINTAR",data_photo:SessionPhoto,showAdmin:rows[6],pass:notif_tangki_full,data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});
 			}			
 		});
      });
 });
 
-router.get('/tangki_air',authentication_mdl.is_login, function(req, res, next) {
-	var personList = [];
-	var SessionEmail = req.session.is_login_email;
-	var SessionPhoto = req.session.is_login_photo;
-	var SessionIdAdmin = req.session.is_login_id;
 
-	req.getConnection(function(err,connection){
-		var sql = "SELECT * FROM toren;select ketinggian from toren where jenis_toren='Toren 2' order by id_admin desc limit 1;select ketinggian from toren where jenis_toren='Toren 1' order by id_admin desc limit 1;SELECT * FROM sms_pengirim where status_sms='pass';SELECT * FROM admin where id_admin = ?";		
-		var query = connection.query(sql,[SessionIdAdmin],function(err,rows, fields)
-		{
-			console.log("List Records:- " + rows[0]);
-			console.log("Toren Besar Records:- " + rows[1]);
-			console.log("Toren Sedang Records:- " + rows[2]);
-			console.log("SMS Records:- " + rows[3]);
-			console.log("Records Admin : " + rows[4]);
-
-			// bikin validasi kalo status air diproses, tinggi air harusnya kurang dari 10 
-			if(err)
-			{
-				var errornya  = ("Error Selecting : %s ",err );
-				req.flash('msg_error', errornya);
-			}
-
-			else if(rows[3].length>=1)
-			{	
-			res.render('depot/tangki_air',{title:"Monitoring Tangki",data_photo:SessionPhoto,showAdmin:rows[4],pass:notif_pesanan_proses,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});   
-			console.log(req.session.is_login_email);
-			}
-			else if(rows[3].length==0)
-			{	
-			res.render('depot/tangki_air',{title:"Monitoring Tangki",data_photo:SessionPhoto,showAdmin:rows[4],pass:notif_tangki_full,data1:rows[0],data2:rows[1],data3:rows[2],session_store:req.session});
-			console.log(req.session.is_login_email);
-			}
-        	
-		});
-		console.log(query.sql);
-     });
-});
-
-router.get('/sms_order',authentication_mdl.is_login, function(req, res, next) {
-
-	var SessionEmail = req.session.is_login_email;	
-	var SessionPhoto = req.session.is_login_photo;
-	var SessionIdAdmin = req.session.is_login_id;
-
-	req.getConnection(function(err,connection){
-		var sql = "SELECT * FROM sms_pengirim where status_sms='pass';SELECT * FROM sms_pengirim;SELECT * FROM admin where id_admin = ?;SELECT * FROM sms_pengirim where status_sms='full'";
-		var query = connection.query(sql,[SessionIdAdmin],function(err,rows, fields)
-		{
-
-			console.log("SMS Records:- " + rows[0]);
-			console.log("List Records:- " + rows[1]);
-			console.log("Admin Records:- " + rows[2]);
-			var count_stat = rows[3].length;
-
-			if(err)
-			{
-				var errornya  = ("Error Selecting : %s ",err );
-				req.flash('msg_error', errornya);
-			}
-
-			else if(rows[0].length>=1)
-			{	
-			res.render('depot/sms_order',{title:"SMS Order Air",data_photo:SessionPhoto,pass:notif_pesanan_proses,showAdmin:rows[2],count:count_stat,data:rows[1],session_store:req.session});
-			}
-
-			else if(rows[0].length==0)
-			{	
-			res.render('depot/sms_order',{title:"SMS Order Air",data_photo:SessionPhoto,pass:notif_tangki_full,showAdmin:rows[2],count:count_stat,data:rows[1],session_store:req.session});
-			}
-		});
-         console.log(query.sql);
-     });
-});
 
 router.get('/pengisian',authentication_mdl.is_login, function(req, res, next) {
 

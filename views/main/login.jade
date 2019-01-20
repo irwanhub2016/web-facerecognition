@@ -13,12 +13,13 @@ html
 		.login-box
 			.login-logo
 				a(href='#')
-				b
-					| Selamat Datang di Depot Pintar
-					img(src='/adminlte/dist/img/logoweb.png', width='180px', height='120px')
+				
+					| Selamat Datang <br>di FaceTrix Paramadina
+					<br>
+					img(src='/adminlte/dist/img/logo2.png', width='310px', height='180px')
 			.login-box-body
 				p.login-box-msg
-					| Masuk dengan akun
+					| Sistem Absensi Universitas Paramadina<br>Masuk sebagai Admin atau Dosen
 
 				form(action="/login/",method="post")
 					- if (messages.msg_error) 
@@ -37,10 +38,10 @@ html
 						span.glyphicon.glyphicon-lock.form-control-feedback
 					.row
 						.col-xs-8
-							.checkbox.icheck
+							//.checkbox.icheck
 								label
-									input(type="checkbox")
-									|  Remember Me
+									input(type="")
+									//|  Remember Me
 						.col-xs-4
 							button(type="submit").btn.btn-primary.btn-block.btn-flat
 								| Sign In
