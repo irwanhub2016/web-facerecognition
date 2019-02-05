@@ -2,10 +2,10 @@
 -- version 4.8.3
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Feb 05, 2019 at 01:46 PM
--- Server version: 10.1.36-MariaDB
--- PHP Version: 7.0.32
+-- Host: 127.0.0.1
+-- Generation Time: Feb 05, 2019 at 03:21 PM
+-- Server version: 10.1.37-MariaDB
+-- PHP Version: 7.1.24
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -246,16 +246,17 @@ CREATE TABLE `table_akademik` (
   `password` varchar(100) NOT NULL,
   `tanggal_lahir` varchar(50) DEFAULT NULL,
   `alamat` text,
-  `no_telp` varchar(20) DEFAULT NULL,
-  `status` varchar(10) DEFAULT NULL
+  `no_telp` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `table_akademik`
 --
 
-INSERT INTO `table_akademik` (`nik_akademik`, `nama`, `password`, `tanggal_lahir`, `alamat`, `no_telp`, `status`) VALUES
-('56789', 'isum', '21232f297a57a5a743894a0e4a801fc3', NULL, NULL, NULL, NULL);
+INSERT INTO `table_akademik` (`nik_akademik`, `nama`, `password`, `tanggal_lahir`, `alamat`, `no_telp`) VALUES
+('11111', 'Hani', '76e105c3a61db1b3f13207774aeccc3c', '22 Januari', 'Bekasi', '0987776534273'),
+('22222', 'Dani', '55b7e8b895d047537e672250dd781555', '09 Maret 1987', 'Bojong', '0897363636363'),
+('33333', 'Rio', 'd5ed38fdbf28bc4e58be142cf5a17cf5', '12 Desember 1997', 'BSD', '0897363636354');
 
 -- --------------------------------------------------------
 
@@ -270,15 +271,18 @@ CREATE TABLE `table_dosen` (
   `tanggal_lahir` varchar(50) DEFAULT NULL,
   `alamat` text,
   `no_telp` varchar(20) DEFAULT NULL,
-  `status` varchar(10) DEFAULT NULL
+  `id_status` int(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `table_dosen`
 --
 
-INSERT INTO `table_dosen` (`nik_dosen`, `nama`, `password`, `tanggal_lahir`, `alamat`, `no_telp`, `status`) VALUES
-('1234', 'irwan', '21232f297a57a5a743894a0e4a801fc3', '2018-11-01', NULL, NULL, NULL);
+INSERT INTO `table_dosen` (`nik_dosen`, `nama`, `password`, `tanggal_lahir`, `alamat`, `no_telp`, `id_status`) VALUES
+('010101', 'Harry ', '3b87c97d15e8eb11e51aa25e9a5770e9', '08 Juli 1972', 'Bekasi', '0897363639999', 1),
+('020202', 'Sari', ' a87bcf310c4fdf2a80f2f3d97f1f9424', '09 Maret 1987', 'Pondok Indah', '0897363637778', 0),
+('030303', 'Retno', 'edd39370424d54db23ccec123f0ce66b', '09 Mei 1966', 'Bekasi', '098888882822', 0),
+('040404', 'Diki', ' 43b93443937ea642a9a43e77fd5d8f77', '06 Januari 1966', 'BSD', '0897777377373', 0);
 
 -- --------------------------------------------------------
 
@@ -305,6 +309,36 @@ CREATE TABLE `table_info` (
   `id_matkul` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `table_info`
+--
+
+INSERT INTO `table_info` (`no`, `nim`, `tgl_absen`, `jam_absen`, `id_matkul`) VALUES
+(6, '116103006', '2018-12-10', '09.45', 'MT-4');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `table_jadwalmatkul`
+--
+
+CREATE TABLE `table_jadwalmatkul` (
+  `no` int(30) NOT NULL,
+  `nik_dosen` varchar(30) NOT NULL,
+  `jumlah_mahasiswa` int(30) NOT NULL,
+  `id_ruang` varchar(10) NOT NULL,
+  `jam_mulai` varchar(10) NOT NULL,
+  `jam_selesai` varchar(10) NOT NULL,
+  `id_matkul` varchar(30) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `table_jadwalmatkul`
+--
+
+INSERT INTO `table_jadwalmatkul` (`no`, `nik_dosen`, `jumlah_mahasiswa`, `id_ruang`, `jam_mulai`, `jam_selesai`, `id_matkul`) VALUES
+(1, '010101', 6, 'A21', '09.45', '12.12', 'MT-1');
+
 -- --------------------------------------------------------
 
 --
@@ -315,8 +349,21 @@ CREATE TABLE `table_mahasiswa` (
   `nim` varchar(30) NOT NULL,
   `nama_mahasiswa` varchar(30) NOT NULL,
   `tgl_lahir` varchar(30) NOT NULL,
-  `foto` varchar(100) NOT NULL
+  `foto` varchar(100) NOT NULL,
+  `id_status_mahasiswa` int(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `table_mahasiswa`
+--
+
+INSERT INTO `table_mahasiswa` (`nim`, `nama_mahasiswa`, `tgl_lahir`, `foto`, `id_status_mahasiswa`) VALUES
+('116103001', 'Reynaldi Prathama ', '08 Agustus 1999', '', 1),
+('116103003', 'Oviana Rosita Putri', '03 Juli 1998', '', 1),
+('116103004', 'M Dzaky Prakasa ', '08 Januari 1998', '', 1),
+('116103005', 'Dea Oktaviani ', '12 Oktober 1998', '', 1),
+('116103006', 'Sitta Fadillah ', '09 September 1998', '', 1),
+('116103007', 'Nazifa Putri', '02 Februari 1999', '', 1);
 
 -- --------------------------------------------------------
 
@@ -334,7 +381,30 @@ CREATE TABLE `table_matakuliah` (
 --
 
 INSERT INTO `table_matakuliah` (`id_matkul`, `mata_kuliah`) VALUES
-('MT-1', 'ipa');
+('MT-1', 'APII'),
+('MT-2', 'Game Pemprograman'),
+('MT-3', 'AI'),
+('MT-4', 'Basis Data'),
+('MT-5', 'HCI');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `table_status`
+--
+
+CREATE TABLE `table_status` (
+  `id_status` int(5) NOT NULL,
+  `keterangan` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `table_status`
+--
+
+INSERT INTO `table_status` (`id_status`, `keterangan`) VALUES
+(0, 'non_aktif'),
+(1, 'aktif');
 
 -- --------------------------------------------------------
 
@@ -439,7 +509,8 @@ ALTER TABLE `table_akademik`
 -- Indexes for table `table_dosen`
 --
 ALTER TABLE `table_dosen`
-  ADD PRIMARY KEY (`nik_dosen`);
+  ADD PRIMARY KEY (`nik_dosen`),
+  ADD KEY `id_status` (`id_status`);
 
 --
 -- Indexes for table `table_dosen_matkul`
@@ -457,16 +528,31 @@ ALTER TABLE `table_info`
   ADD KEY `mata_kuliah` (`id_matkul`);
 
 --
+-- Indexes for table `table_jadwalmatkul`
+--
+ALTER TABLE `table_jadwalmatkul`
+  ADD PRIMARY KEY (`no`),
+  ADD KEY `nik_dosen` (`nik_dosen`),
+  ADD KEY `id_matkul` (`id_matkul`);
+
+--
 -- Indexes for table `table_mahasiswa`
 --
 ALTER TABLE `table_mahasiswa`
-  ADD PRIMARY KEY (`nim`);
+  ADD PRIMARY KEY (`nim`),
+  ADD KEY `id_status_mahasiswa` (`id_status_mahasiswa`);
 
 --
 -- Indexes for table `table_matakuliah`
 --
 ALTER TABLE `table_matakuliah`
   ADD PRIMARY KEY (`id_matkul`);
+
+--
+-- Indexes for table `table_status`
+--
+ALTER TABLE `table_status`
+  ADD PRIMARY KEY (`id_status`);
 
 --
 -- Indexes for table `toren`
@@ -496,7 +582,13 @@ ALTER TABLE `sms_pengirim`
 -- AUTO_INCREMENT for table `table_info`
 --
 ALTER TABLE `table_info`
-  MODIFY `no` int(10) NOT NULL AUTO_INCREMENT;
+  MODIFY `no` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `table_jadwalmatkul`
+--
+ALTER TABLE `table_jadwalmatkul`
+  MODIFY `no` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `toren`
@@ -533,6 +625,12 @@ ALTER TABLE `sms_pengirim`
   ADD CONSTRAINT `sms_pengirim_ibfk_1` FOREIGN KEY (`id_admin`) REFERENCES `admin` (`id_admin`);
 
 --
+-- Constraints for table `table_dosen`
+--
+ALTER TABLE `table_dosen`
+  ADD CONSTRAINT `fk_status_dosen` FOREIGN KEY (`id_status`) REFERENCES `table_status` (`id_status`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
 -- Constraints for table `table_dosen_matkul`
 --
 ALTER TABLE `table_dosen_matkul`
@@ -545,6 +643,19 @@ ALTER TABLE `table_dosen_matkul`
 ALTER TABLE `table_info`
   ADD CONSTRAINT `fk_mata_kuliah_info` FOREIGN KEY (`id_matkul`) REFERENCES `table_matakuliah` (`id_matkul`),
   ADD CONSTRAINT `fk_nim_info` FOREIGN KEY (`nim`) REFERENCES `table_mahasiswa` (`nim`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `table_jadwalmatkul`
+--
+ALTER TABLE `table_jadwalmatkul`
+  ADD CONSTRAINT `fk_id_matkul` FOREIGN KEY (`id_matkul`) REFERENCES `table_matakuliah` (`id_matkul`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_nik_dosen_index` FOREIGN KEY (`nik_dosen`) REFERENCES `table_dosen` (`nik_dosen`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Constraints for table `table_mahasiswa`
+--
+ALTER TABLE `table_mahasiswa`
+  ADD CONSTRAINT `fk_status_mahasiswa_index` FOREIGN KEY (`id_status_mahasiswa`) REFERENCES `table_status` (`id_status`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `toren`
