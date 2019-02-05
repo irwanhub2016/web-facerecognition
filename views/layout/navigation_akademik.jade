@@ -21,18 +21,18 @@ header.main-header
 				li.dropdown.user.user-menu
 					a(href='#',data-toggle='dropdown').dropdown-toggle
 						span.hidden-xs
-							| #{showAdmin[0].nik_dosen}
+							| #{showAdmin[0].nik_akademik}
 					ul.dropdown-menu
 						li.user-header
 							p
-								| #{showAdmin[0].nik_dosen} - Administrator
+								| #{showAdmin[0].nik_akademik} - Administrator
 								small
 									| Member since May 2018
 
 						li.user-footer
 							.pull-left
-								a(href='http://localhost:9876/depot/edit/#{showAdmin[0].nik_dosen}').btn.btn-default.btn-flat
+								a(href='http://localhost:9876/depot/edit/#{showAdmin[0].nik_akademik}').btn.btn-default.btn-flat
 									| Profile
 							.pull-right
-								a(href='http://localhost:9876/logout').btn.btn-default.btn-flat
+								a(href='http://localhost:9876/logout/1').btn.btn-default.btn-flat
 									| Sign out
