@@ -58,13 +58,6 @@ var valuePhoto = {
 						console.log(req.session.v_email);
 						res.render('main/login',{title:"Login | DAIM PINTAR"});}
 
-				/*res.json(
-				  {
-				    status : true,
-				    message : "Succesfully upload",
-				    photo : x
-				  }
-				);*/
 				console.log("Sukses ambil dan simpan data Photo");
 				}		
 			});
@@ -285,7 +278,7 @@ router.post('/login',function(req,res,next){
 
 	else
 	{
-		errors_detail = "<p>Sory there are error</p><ul>";
+		errors_detail = "<p>Sory there are error ya</p><ul>";
 		for (i in errors) 
 		{ 
 			error = errors[i]; 
