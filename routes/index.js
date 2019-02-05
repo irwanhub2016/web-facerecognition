@@ -135,6 +135,22 @@ router.get('/login',function(req,res,next)
 		//next(); 
 });
 
+router.get('/regist',function(req,res,next)
+{
+
+		if (req.session.is_login) 
+		{ 
+			console.log(req.session.is_login_email);
+			return res.redirect('/depot'); 
+		}
+		else
+		{
+			console.log(req.session.v_email);
+			res.render('main/regist',{title:"Registrasi | FaceTrix"});} 
+		//next(); 
+});
+
+
 router.post('/login',function(req,res,next){
 	session_store=req.session;
 	session_email=req.session;
