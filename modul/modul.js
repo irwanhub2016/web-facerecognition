@@ -1,5 +1,5 @@
 module.exports = {
-	name : "sigit prasetya",
+	name : "irwan syarifudin",
 	print : function(a){
 		console.log("im a "+a);
 	},

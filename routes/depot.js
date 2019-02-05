@@ -4,13 +4,7 @@ var moment = require('moment');
 var randomstring = require('randomstring');
 var md5 = require('md5');
 var authentication_mdl = require('../middlewares/authentication');
-var apiKey = 'kCGM6nsJ6XUHt8FclKDFyvuiImRiAKXkxnJhrpkb-pJ'; //untuk IFTTT
-/*
-kCGM6nsJ6XUHt8FclKDFyvuiImRiAKXkxnJhrpkb-pJ -> irwansyarifudin16@gmail.com
-bmWrj4Wl_254bCnzSRoW_P ->  testpot
-dM3b9lcUMk6YMLbW1a2_EvjdpyqvpkZVpfTJp23vRJv -> production
-*/
-var IFTTTMaker = require('iftttmaker')(apiKey);
+
 var session_store;
 var notif_pesanan_proses="pesanan sedang diproses";
 var notif_tangki_full="Tangki air masih penuh";
@@ -45,69 +39,6 @@ router.get('/account',authentication_mdl.is_login, function(req, res, next) {
 		});
      });
 });
-
-/*router.get('/getPengisian', function(req, res, next) {
-
-moment.locale('id');
-var v_berat = req.param('berat');
-var v_status_lampu = req.param('status_lampu'); //toren besar
-v_harga = 5000;
-v_jam = moment().format('LTS');
-v_tanggal = moment().format('LL');
-v_id_admin = 5; 
-
-var id_unik = "Peng-";
-var lasttime = v_jam.substr(v_jam.length - 1);
-var random = randomstring.generate(7);
-
-v_id_pengisian = id_unik + random+ lasttime ;
-
-var valuePengisian = {
-			id_pengisian: v_id_pengisian,
-			id_admin: '5',
-			date_pengisian:v_tanggal,
-			time:v_jam,
-			harga: '5000',
-			berat: '50'
-		}
-
-var valueLampu = {
-			time:v_jam,
-			status_lampu: v_status_lampu
-		}
-
-		var insert_pengisian = 'INSERT INTO pengisian SET ?';
-		var update_lampu = 'update lampu SET ? where id_lampu=1';
-
-		req.getConnection(function(err,connection){
-			var queryPengisian = connection.query(insert_pengisian, valuePengisian, function(err, result){
-				if(err)
-				{
-				console.log("Gagal ambil dan simpan data Pengisian");
-				}
-				else
-				{
-				console.log("Sukses ambil dan simpan data Pengisian");
-				}		
-			});
-			var queryLampu = connection.query(update_lampu, valueLampu, function(err, result){
-				if(err)
-				{
-				console.log("Gagal ambil dan simpan data Lampu");
-				}
-				else
-				{
-				console.log("Sukses ambil dan simpan data Lampu");
-				}		
-			});
-		});
-
-console.log("Ambil Data : " +"| Berat : " + v_berat + "| Lampu : " + v_status_lampu 
-	+ "| Harga : " + v_harga + "| Tanggal : " + v_tanggal + "| Jam : " + v_jam + " " + v_id_pengisian);
-
-res.send(req.params);
-next();
-});*/
 
 router.get('/getPengisian/berat', function(req, res, next) {
 
@@ -318,265 +249,6 @@ res.send("yess !");
 //next()
 });
 
-router.get('/getIFTTT', function(req, res, next) {
-
-///:sensor1/:sensor2/:order
-
-var x;
-
-moment.locale('en-gb');//format UK
-
-var v_sensor1 = req.param('sensor1');
-var v_sensor2 = req.param('sensor2');
-var ambil_sensor = req.param('order');
-v_time = moment().format('LTS');
-
-moment.locale('id');//format Indo
-
-v_date	= moment().format('LL');
-
-if(ambil_sensor=='pass')
-{ 
-        console.log("Status : " + ambil_sensor);
-        console.log("Toren 1 : " + v_sensor1);
-        console.log("Toren 2 : " + v_sensor2);
-        res.send("Status : "+ ambil_sensor);
-
-		var insert_konten_sms = 'INSERT INTO sms_pengirim SET ?';
-		req.getConnection(function(err,connection)
-		{
-				
-				if(err)
-				var errornya  = ("Error Selecting : %s ",err );   
-				req.flash('msg_error', errornya);
-				
-						var query = connection.query('SELECT * FROM sms_pengirim where status_sms="pass"',function(err,rows, fields)
-						{
-						    if(rows.length >=1 )
-							{
-
-
-									var updateNilaiTorenBesar = {
-												ketinggian: v_sensor1
-											}
-
-									var updateNilaiTorenSedang = {
-												ketinggian: v_sensor2
-											}
-											
-								var QueryUpdateNilaiTorenBesar = connection.query('update toren set ? where jenis_toren="Toren 1" order by id_admin desc limit 1',updateNilaiTorenBesar,function(err,rows, fields)
-								{
-
-										if(err)
-										{
-										console.log("Gagal update Tinggi Toren Besar");
-										}
-										else
-										{
-
-										console.log("Sukses update Tinggi Toren Besar");
-										}
-								});
-
-								var QueryUpdateNilaiTorenSedang = connection.query('update toren set ? where jenis_toren="Toren 2" order by id_admin desc limit 1',updateNilaiTorenSedang,function(err,rows, fields)
-								{
-
-										if(err)
-										{
-										console.log("Gagal update Tinggi Toren Sedang");
-										}
-										else
-										{
-
-										console.log("Sukses update Tinggi Toren Sedang");
-										}
-								});
-								console.log("SMS sedang diproses kirim");
-							}
-
-							else if (rows.length <= 0)
-							{	
-								console.log("Belum ada kiriman sms");
-
-											var validasiJam = moment().format('HH');
-											
-											if(validasiJam < 11 && validasiJam >= 0)
-											{
-												console.log("Selamat Pagi. Pengiriman SMS Otomatis pemesanan air akan dikirim");												
-												
-												var waktuPagi = 'pagi';
-												global.ySP=waktuPagi;
-												x=ySP;
-												
-												var request = {
-										          event: 'pesanair2018',
-										          values: {
-										            value1: waktuPagi
-										          }
-										        };
-      											triggerIFTTT();
-											}
-
-											else if (validasiJam < 15 && validasiJam > 11) 
-
-											{
-											console.log("Selamat Siang. Pengiriman SMS Otomatis pemesanan air akan dikirim");
-
-												var waktuSiang = 'siang';
-												global.ySA=waktuSiang;
-												x=ySA;
-
-												var request = {
-										          event: 'pesanair2018',
-										          values: {
-										            value1: waktuSiang
-										          }
-										        };
-												triggerIFTTT();										        
-											}	
-
-											else if (validasiJam < 19 && validasiJam > 15) 
-
-											{
-											console.log("Selamat Sore. Pengiriman SMS Otomatis pemesanan air akan dikirim");												
-												
-												var waktuSore = 'sore';
-												global.ySO=waktuSore;
-												x=ySO;
-
-												var request = {
-										          event: 'pesanair2018',
-										          values: {
-										            value1: waktuSore
-										          }
-										        };
-
-												triggerIFTTT();	
-											}
-
-											else if (validasiJam < 24 && validasiJam >= 19) 
-
-											{
-											console.log("Selamat Malam. Pengiriman SMS Otomatis pemesanan air akan dikirim");
-
-												var waktuMalam = 'malam';
-												global.yM=waktuMalam;
-												x=yM;
-
-												var request = {
-										          event: 'pesanair2018',
-										          values: {
-										            value1: waktuMalam
-										          }
-										        };
-												triggerIFTTT();
-											}
-
-											function triggerIFTTT()
-											{
-
-
-										        IFTTTMaker.send(request, function (error) {
-										          if (error) 
-										          {
-										            console.log('Maaf. Request pengiriman SMS gagal:', error);
-										          } 
-										          else 
-										          {
-										            console.log('Selamat ! SMS otomatis berhasil dikirim ke distributor air.');
-										            getValue();
-										          }  
-									        	}); 												
-											}
-
-								function getValue()
-								{			
-
-									var kontenSMSPass = {
-
-												no_telp_pengirim: '123',
-												time:v_time,
-												date:v_date,
-												isi_sms: 'Selamat ' + x + '. Saya dengan pak mahdi ingin pesan air, tolong segera dikirim hari ini. Mohon konfirmasi ke nomor saya 082155572233. Terima kasih. -Bapak Mahdi Lenteng Agung', 
-												status_sms: 'pass'
-											}
-
-									var updateNilaiTorenBesar = {
-												ketinggian: v_sensor1
-											}
-
-									var updateNilaiTorenSedang = {
-												ketinggian: v_sensor2
-											}
-
-								var queryInsert = connection.query(insert_konten_sms, kontenSMSPass,function(err,result, fields)
-								{
-										if(err)
-										{
-
-										console.log("Gagal ambil dan simpan data SMS");
-
-										}
-
-										else
-										{
-
-											var QueryUpdateNilaiTorenBesar = connection.query('update toren set ? where jenis_toren="Toren 1" order by id_admin desc limit 1',updateNilaiTorenBesar,function(err,rows, fields)
-											{
-
-													if(err)
-													{
-													console.log("Gagal update Tinggi Toren Besar");
-													}
-													else
-													{
-
-													console.log("Sukses update Tinggi Toren Besar");
-													}
-											});
-
-											var QueryUpdateNilaiTorenSedang = connection.query('update toren set ? where jenis_toren="Toren 2" order by id_admin desc limit 1',updateNilaiTorenSedang,function(err,rows, fields)
-											{
-
-													if(err)
-													{
-													console.log("Gagal update Tinggi Toren Sedang");
-													}
-													else
-													{
-
-													console.log("Sukses update Tinggi Toren Sedang");
-													}
-											});
-
-											console.log("Sukses kirim dan simpan data SMS");
-											console.log("Waktu : " + x);
-										}
-								});
-
-								}
-
-							}
-
-							else
-							{
-								console.log("SMS isn't work to showed");
-							}
-						});
-
-		        console.log(query.sql);		    
-		});
-
-}
-
-else
-{
-        console.log("uppps parameter salah");
-        res.send("uppps parameter salah");
-}
-
-});
-
 router.get('/',authentication_mdl.is_login,function(req, res, next) {
 	var personList = [];
 	var SessionEmail = req.session.is_login_email;
@@ -614,6 +286,88 @@ router.get('/',authentication_mdl.is_login,function(req, res, next) {
 			else if(rows[5].length==0)
 			{	
 			res.render('depot/main_page',{title:"DAIM PINTAR",data_photo:SessionPhoto,showAdmin:rows[6],pass:notif_tangki_full,data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});
+			
+			}			
+		});
+     });
+});
+
+router.get('/auth_akademik',authentication_mdl.is_login,function(req, res, next) {
+
+	var personList = [];
+	var SessionNik = req.session.is_login_nik;
+
+ 	req.getConnection(function(err,connection)
+	 {
+		var sql = "SELECT * FROM toren limit 4;SELECT * FROM pengisian limit 4;SELECT * FROM lampu where id_lampu = 1;SELECT * FROM pengisian;SELECT SUM(harga) as 'Count' FROM pengisian;SELECT * FROM sms_pengirim WHERE status_sms = ?;SELECT * FROM table_akademik where nik_akademik = ?";
+		var query = connection.query(sql,['pass',SessionNik],function(err,rows, fields)
+		{
+			
+			// console.log("pengisian Records: " + rows[0]);
+			// console.log("toren Records: " + rows[1]);
+			// console.log("lampu Records: " + rows[2]);
+			// console.log("Count Pengisian Records: " + rows[3].length);
+			// console.log("Sum Pengisian Records: " + fields[4]);
+			// console.log("Records Admin : " + rows[6]);
+
+			var count_transaksi = rows[3].length;
+			var sum_transaksi = rows[4];
+
+			console.log("Session : ", SessionNik);
+
+			if(err)
+			{
+				var errornya  = ("Error Selecting : %s ",err );   
+				req.flash('msg_error', errornya);
+			}
+			else if(rows[5].length>=1)
+			{	
+			res.render('depot/main_page',{title:"Akademik",showAdmin:rows[6],pass:notif_pesanan_proses,data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});   
+			
+			}
+			else if(rows[5].length==0)
+			{	
+			res.render('depot/main_page',{title:"Akademik",showAdmin:rows[6],pass:notif_tangki_full,data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});
+			
+			}			
+		});
+     });
+});
+
+router.get('/auth_dosen',authentication_mdl.is_login,function(req, res, next) {
+
+	var personList = [];
+	var SessionNik = req.session.is_login_nik;
+
+ 	req.getConnection(function(err,connection)
+	 {
+		var sql = "SELECT * FROM toren limit 4;SELECT * FROM pengisian limit 4;SELECT * FROM lampu where id_lampu = 1;SELECT * FROM pengisian;SELECT SUM(harga) as 'Count' FROM pengisian;SELECT * FROM sms_pengirim WHERE status_sms = ?;SELECT * FROM table_dosen where nik_dosen = ?";
+		var query = connection.query(sql,['pass',SessionNik],function(err,rows, fields)
+		{
+			
+			// console.log("pengisian Records: " + rows[0]);
+			// console.log("toren Records: " + rows[1]);
+			// console.log("lampu Records: " + rows[2]);
+			// console.log("Count Pengisian Records: " + rows[3].length);
+			// console.log("Sum Pengisian Records: " + fields[4]);
+			// console.log("Records Admin : " + rows[6]);
+
+			var count_transaksi = rows[3].length;
+			var sum_transaksi = rows[4];
+
+			if(err)
+			{
+				var errornya  = ("Error Selecting : %s ",err );   
+				req.flash('msg_error', errornya);
+			}
+			else if(rows[5].length>=1)
+			{	
+			res.render('depot/main_page_dosen',{title:"Dosen",showAdmin:rows[6],pass:notif_pesanan_proses,data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});   
+			
+			}
+			else if(rows[5].length==0)
+			{	
+			res.render('depot/main_page_dosen',{title:"Dosen",showAdmin:rows[6],pass:notif_tangki_full,data_toren:rows[0],data_pengisian:rows[1],data_lampu:rows[2],count_transaksiData:count_transaksi,count_transaksiSum:sum_transaksi,session_store:req.session});
 			
 			}			
 		});
@@ -1023,16 +777,5 @@ router.post('/add',authentication_mdl.is_login, function(req, res, next) {
 	}
 
 });
-
-/*router.get('/add', function(req, res, next) {
-	res.render(	'depot/add-admin', 
-	{ 
-		title: 'Add New Admin',
-		name: '',
-		email: '',
-		phone:'',
-		address:''
-	});
-});*/
 
 module.exports = router;

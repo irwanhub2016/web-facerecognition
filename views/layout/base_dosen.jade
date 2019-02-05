@@ -1,0 +1,13 @@
+doctype html
+html
+	head
+		include header_dosen.jade
+		include header.jade
+	body.hold-transition.skin-blue.sidebar-mini
+		.wrapper
+			include navigation_dosen.jade
+			include sidebar_dosen.jade
+			.content-wrapper
+				block content
+			include footer_dosen.jade
+			include js_dosen.jade

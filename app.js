@@ -9,7 +9,6 @@ var session = require('express-session');
 var index = require('./routes/index');
 var users = require('./routes/users');
 var depot = require('./routes/depot');
-var dosen = require('./routes/dosen');
 var expressValidator = require('express-validator');
 var methodOverride = require('method-override');
 var multer = require("multer");
@@ -65,48 +64,17 @@ app.use(
       host: 'localhost',
       password : '',
       port : 3306,
-      database:'monitoring_depot',
+      database:'face_trix',
       debug: false,
       multipleStatements: true
     },'single')
 
 );
 
-
 app.use('/', index);
 
 app.use('/depot', depot);
 app.use('/users', users);
-app.use('/dosen', dosen)
-
-var requestTime = function (req, res, next) {
-  req.requestTime = Date.now('asasassas')
-
-  next()
-}
-
-
-app.get('/route', function (req, res, next) {
-   var pdf = require('./routes/services').create();
-   pdf.pipe(res);
-   pdf.end();
-});
-
-app.use(requestTime)
-
-app.get('/ReqTime', function (req, res) {
-  var responseText = 'Hello World!<br>'
-  responseText += '<small>Requested at: ' + moment().format('dddd') + '</small>'
-  res.send(responseText);
-})
-
-
-app.get('/halo/:halo', function (req, res, next) {
-    var halo = req.param('halo');
-    console.log(halo);
-    console.log(md5(halo));
-})
-
 
 app.use(function(err, req, res, next) {
   var err = new Error('Not Found');

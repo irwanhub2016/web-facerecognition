@@ -19,8 +19,9 @@ html
 					img(src='/adminlte/dist/img/logo2.png', width='310px', height='180px')
 			.login-box-body
 				p.login-box-msg
-					| Sistem Absensi Universitas Paramadina<br>Masuk sebagai Admin
-				form(action="/login/",method="post")
+					| Sistem Absensi Universitas Paramadina<br>Masuk sebagai Dosen
+
+				form(action="/login_dosen/",method="post")
 					- if (messages.msg_error) 
 						.alert.alert-danger.alert-dismissable 
 							button.close(type='button', data-dismiss='alert', aria-hidden='true') 

@@ -1,0 +1,13 @@
+doctype html
+html
+	head
+		include header_akademik.jade
+		include header.jade
+	body.hold-transition.skin-blue.sidebar-mini
+		.wrapper
+			include navigation_akademik.jade
+			include sidebar_akademik.jade
+			.content-wrapper
+				block content
+			include footer_akademik.jade
+			include js_akademik.jade
